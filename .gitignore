@@ -1,0 +1,16 @@
+connect.php
+.DS_Store
+*.sql
+update_data.php
+test.php
+new
+selenium/__pycache__
+testing
+phpqrcode
+#
+campaign
+email
+pdf
+class
+sub_class
+xl
