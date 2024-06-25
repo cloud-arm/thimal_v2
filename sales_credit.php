@@ -36,8 +36,6 @@ include("connect.php");
           <?php
           if (isset($_GET['type'])) {
 
-            $d1 = $_GET['d1']; //date one
-            $d2 = $_GET['d2']; //date two
             $type = $_GET['type'];
             $customer_id = $_GET['cus'];
             $group = $_GET['group'];
@@ -159,10 +157,9 @@ include("connect.php");
         <div class="box box-info">
           <div class="box-header with-border">
             <h3 class="box-title">Debtor Report </h3>
-            <a style="margin-left: 10px;" href="sales_credit_print.php?type=<?php echo $_GET['type'] ?>&cus=<?php echo $_GET['cus'] ?>&group=<?php echo $_GET['group'] ?>&lorry=<?php echo $_GET['lorry'] ?>&customer_type=<?php echo $_GET['customer_type'] ?>" title="Click to Print" class="btn btn-danger btn-sm"><i class="fa fa-print"></i> Print</a>
-            <a style="margin-left: 10px;" href="sales_credit_age_print.php?type=<?php echo $_GET['type'] ?>&cus=<?php echo $_GET['cus'] ?>&group=<?php echo $_GET['group'] ?>&lorry=<?php echo $_GET['lorry'] ?>&customer_type=<?php echo $_GET['customer_type'] ?>" title="Click to Print" class="btn btn-danger btn-sm"><i class="fa fa-print"></i> Print (Age)</a>
-            <a style="margin-left: 10px;" href="xl/credit_rp.php" title="Click to Print" class="btn btn-success btn-sm"><i class="fa fa-print"></i> Excel</a>
-            </h3>
+            <span id="tbl_btn">
+
+            </span>
           </div>
           <!-- /.box-header -->
 
@@ -269,7 +266,7 @@ include("connect.php");
                             <a href="bill2.php?invo=<?php echo base64_encode($row2['invoice_number']); ?>" title="Click to View" class="btn btn-primary btn-sm fa fa-eye"></a>
                           </td>
                         </tr>
-                    <?php 
+                    <?php
                       }
                     }
                   }
@@ -325,7 +322,17 @@ include("connect.php");
   <script src="../../plugins/select2/select2.full.min.js"></script>
   <!-- DataTables -->
   <script src="../../plugins/datatables/jquery.dataTables.min.js"></script>
-  <script src="../../plugins/datatables/dataTables.bootstrap.min.js"></script>
+  <script src="../../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+  <script src="../../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+  <script src="../../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+  <script src="../../plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+  <script src="../../plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+  <script src="../../plugins/jszip/jszip.min.js"></script>
+  <script src="../../plugins/pdfmake/pdfmake.min.js"></script>
+  <script src="../../plugins/pdfmake/vfs_fonts.js"></script>
+  <script src="../../plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+  <script src="../../plugins/datatables-buttons/js/buttons.print.min.js"></script>
+  <script src="../../plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
   <!-- SlimScroll -->
   <script src="../../plugins/slimScroll/jquery.slimscroll.min.js"></script>
   <!-- FastClick -->
@@ -340,15 +347,13 @@ include("connect.php");
   <!-- page script -->
   <script>
     $(function() {
-      $("#example1").DataTable();
-      $('#example2').DataTable({
-        "paging": true,
-        "lengthChange": true,
-        "searching": true,
+      $("#example2").DataTable({
+        "responsive": true,
         "ordering": false,
-        "info": true,
-        "autoWidth": true
-      });
+        "buttons": ["excel", "pdf", "print"]
+      }).buttons().container().appendTo('#tbl_btn');
+
+      $("div.dt-buttons.btn-group").append('<a href="sales_credit_age_print.php?type=<?php echo $type ?>&cus=<?php echo $customer_id ?>&group=<?php echo $group ?>&lorry=<?php echo $lorry ?>&customer_type=<?php echo $customer_type ?>" title="Click to Print" class="btn btn-secondary buttons-html5">Print (Age)</a>');
 
       $(".select2").select2();
 
