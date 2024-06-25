@@ -13,6 +13,7 @@
   --bg-dark-75: 37, 37, 37;
   --bg-dark-50: 51, 51, 51;
   --bg-light-100: 256, 256, 256;
+  --bg-light-80: 195, 195, 195;
   --bg-light-75: 220, 220, 220;
   --bg-light-70: 220, 220, 220;
   --bg-light-60: 235, 235, 235;
@@ -29,6 +30,7 @@
 
 .bg-dark {
   --bg-light-100: 30, 30, 30;
+  --bg-light-80: 90, 90, 90;
   --bg-light-75: 37, 37, 37;
   --bg-light-70: 65, 65, 65;
   --bg-light-60: 45, 45, 45;
@@ -839,7 +841,12 @@ body.sidebar-mini .wrapper,
   background-color: transparent !important;
 }
 
-.wrapper .navbar-nav  .user-menu  .dropdown-menu  .user-body.profile-data input[type="submit"].btn.btn-flat,
+.wrapper
+  .navbar-nav
+  .user-menu
+  .dropdown-menu
+  .user-body.profile-data
+  input[type="submit"].btn.btn-flat,
 .wrapper .navbar-nav > .user-menu > .dropdown-menu > .user-footer a {
   color: rgba(var(--bg-light-100));
   background-color: rgba(var(--bg-theme-yellow-80));
@@ -1118,4 +1125,18 @@ body.sidebar-mini .wrapper,
 
 .wrapper .control-sidebar.control-sidebar-open {
   margin-right: 10px;
+}
+
+/* btn */
+
+.btn.btn-secondary {
+  background: rgb(var(--bg-light-70));
+  color: rgba(var(--bg-text-dark-75));
+  outline: rgb(var(--bg-light-70));
+}
+
+.btn.btn-secondary:hover {
+  background: rgb(var(--bg-light-80));
+  color: rgba(var(--bg-text-dark-100));
+  outline: rgb(var(--bg-light-70));
 }
