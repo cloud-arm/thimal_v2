@@ -25,7 +25,7 @@ function whatsApp($number, $text, $url = '')
         "type": "media",
         "message": "' . $text . '",
         "media_url": "' . $media . '",
-        "instance_id": "662B41B331A1C",
+        "instance_id": "65B8745834BB2",
         "access_token": "65b8742c1285f"
         }',
             CURLOPT_HTTPHEADER => array(
