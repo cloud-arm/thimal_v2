@@ -39,42 +39,6 @@ include("connect.php");
 
         $date = date("Y-m-d");
 
-
-        // $result = $db->prepare("SELECT customer_id,credit_period,customer_name FROM customer WHERE credit_period>0 ");
-        // $result->bindParam(':userid', $d2);
-        // $result->execute();
-        // for ($i = 0; $row = $result->fetch(); $i++) {
-        //   $cus = $row['customer_id'];
-        //   $limit = $row['credit_period'];
-
-        //   $result1 = $db->prepare("SELECT invoice_no FROM payment WHERE action='2' and type='credit' and credit_balance>0 and customer_id=:id ");
-        //   $result1->bindParam(':id', $cus);
-        //   $result1->execute();
-        //   for ($i = 0; $row1 = $result1->fetch(); $i++) {
-        //     $sales_id = $row1['invoice_no'];
-
-        //     $result2 = $db->prepare("SELECT date FROM sales WHERE action='1' AND invoice_number='$sales_id'");
-        //     $result2->bindParam(':userid', $d2);
-        //     $result2->execute();
-        //     for ($i = 0; $row2 = $result2->fetch(); $i++) {
-        //       $start = $row2['date'];
-        //       $end =  date("Y-m-d");
-        //       $d1 = strtotime($start);
-        //       $d2 = strtotime($end);
-        //       $tdf = abs($d2 - $d1);
-        //       $day = $tdf / 86400;
-        //       $due = intval($day);
-
-        //       $prd = $due - $limit;
-        //       if ($prd > 0) {
-        //         $sql = "UPDATE  customer SET action=? WHERE customer_id=?";
-        //         $ql = $db->prepare($sql);
-        //         $ql->execute(array(5, $cus));
-        //       }
-        //     }
-        //   }
-        // }
-
         ?>
 
         <div class="row">
