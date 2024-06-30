@@ -50,6 +50,9 @@ include("connect.php");
             $lorry = 'all'; // lorry id
             $customer_type = 'all';
           }
+
+          $_SESSION['SESS_BACK'] = 'sales_credit.php?type=' . $type . '&cus=' . $customer_id . '&lorry=' . $lorry . '&group=' . $group . '&lorry=' . $lorry . '&customer_type=' . $customer_type;
+
           ?>
           <div class="box-body">
 
@@ -180,117 +183,137 @@ include("connect.php");
               </thead>
 
               <tbody>
-                <?php
-                $tot = 0;
-                $pay_type = "";
+            <?php
+            $tot = 0;
+            $pay_type = "";
 
-                $_SESSION['SESS_BACK'] = 'sales_credit.php?type=' . $type . '&cus=' . $customer_id . '&lorry=' . $lorry . '&group=' . $group . '&lorry=' . $lorry . '&customer_type=' . $customer_type;
+            if ($customer_id == "all") {
+              if ($group == "all") {
 
-                if ($customer_id == "all") {
-                  if ($group == "all") {
-
-                    if ($customer_type == "all") {
-                      $customer = $db->prepare("SELECT customer_id,credit_period FROM customer  ORDER BY category DESC");
-                    } else {
-                      $customer = $db->prepare("SELECT customer_id,credit_period FROM customer WHERE type='$customer_type' ORDER BY category DESC");
-                    }
-                  } else {
-                    $customer = $db->prepare("SELECT customer_id,credit_period FROM customer WHERE category='$group' ORDER BY category DESC");
-                  }
+                if ($customer_type == "all") {
+                  $customer_fill = " ";
                 } else {
-                  $customer = $db->prepare("SELECT customer_id,credit_period FROM customer WHERE customer_id='$customer_id' ORDER BY category DESC ");
+                  $customer_fill = " WHERE type='$customer_type' ";
+                }
+              } else {
+                $customer_fill = " WHERE category='$group' ";
+              }
+            } else {
+              $customer_fill = " WHERE customer_id='$customer_id' ";
+            }
+
+            $customer = array();
+            $payment = array();
+            $sales = array();
+
+            $sql1 = "SELECT customer_id FROM customer $customer_fill ORDER BY category DESC";
+            $sql1 = "SELECT customer_id FROM payment WHERE action='2' AND type='credit' AND credit_balance > 0 ORDER BY customer_id";
+            $sql2 = "SELECT customer_id,memo,sales_id,type,action,pay_amount,amount,transaction_id,credit_period,invoice_no FROM payment WHERE action='2' AND type='credit' AND credit_balance > 0  ORDER BY customer_id";
+
+            $result = $db->prepare($sql1);
+            $result->bindParam(':id', $id);
+            $result->execute();
+            for ($i = 0; $row = $result->fetch(); $i++) {
+
+              $customer[] = $row['customer_id'];
+            }
+
+            $result = $db->prepare($sql2);
+            $result->bindParam(':id', $id);
+            $result->execute();
+            for ($i = 0; $row = $result->fetch(); $i++) {
+
+              $payment[$row['customer_id']][] = ["customer_id" => $row['customer_id'], "memo" => $row['memo'], "sales_id" => $row['sales_id'], "type" => $row['type'], "action" => $row['action'], "pay_amount" => $row['pay_amount'], "amount" => $row['amount'], "transaction_id" => $row['transaction_id'], "credit_period" => $row['credit_period'], "invoice_no" => $row['invoice_no']];
+            }
+
+            // echo json_encode($payment);
+
+            foreach ($customer as $cus) {
+              $b_tot = 0;
+              $pay_tot = 0;
+
+              foreach ($payment[$cus] as $row) {
+
+                $invoice = $row['invoice_no'];
+                $limit = $row['credit_period'];
+
+                if ($lorry == 'all') {
+                  $lorry_fill = " ";
+                } else {
+                  $lorry_fill = " AND lorry_no='$lorry' ";
                 }
 
-                $customer->bindParam(':userid', $d2);
-                $customer->execute();
-                for ($i = 0; $row_cus = $customer->fetch(); $i++) {
-                  $cus = $row_cus['customer_id'];
-                  $limit = $row_cus['credit_period'];
-                  $b_tot = 0;
-                  $pay_tot = 0;
+                $result2 = $db->prepare("SELECT date,name,lorry_no,invoice_number FROM sales WHERE action='1' AND invoice_number='$invoice' " . $lorry_fill);
+                $result2->bindParam(':userid', $d2);
+                $result2->execute();
+                for ($i = 0; $row2 = $result2->fetch(); $i++) {
 
-                  $result2z = $db->prepare("SELECT memo,sales_id,type,action,customer_id,pay_amount,amount,transaction_id,credit_period,invoice_no FROM payment WHERE action='2' and type='credit' and credit_balance>0 and customer_id='$cus' ");
-                  $result2z->bindParam(':userid', $d2);
-                  $result2z->execute();
-                  for ($i = 0; $row = $result2z->fetch(); $i++) {
-                    $sales_id = $row['invoice_no'];
-                    $limit = $row['credit_period'];
+                  $pay_type = $row['type'];
+                  $action = $row['action'];
 
-                    if ($lorry == 'all') {
-                      $result2 = $db->prepare("SELECT date,name,lorry_no,invoice_number FROM sales WHERE action='1' AND invoice_number='$sales_id'");
-                    } else {
-                      $result2 = $db->prepare("SELECT date,name,lorry_no,invoice_number FROM sales WHERE action='1' AND invoice_number='$sales_id' AND lorry_no='$lorry' ");
-                    }
-                    $result2->bindParam(':userid', $d2);
-                    $result2->execute();
-                    for ($i = 0; $row2 = $result2->fetch(); $i++) {
+                  $date = $row2['date'];
+                  $now =  date("Y-m-d");
+                  $start = strtotime($date);
+                  $end = strtotime($now);
+                  $time_dff = abs($end - $start);
+                  $intval = $time_dff / 86400;
+                  $rs1 = intval($intval);
 
-                      $pay_type = $row['type'];
-                      $action = $row['action'];
-
-                      $date1 = $row2['date'];
-                      $date =  date("Y-m-d");
-                      $sday = strtotime($date1);
-                      $nday = strtotime($date);
-                      $tdf = abs($nday - $sday);
-                      $nbday1 = $tdf / 86400;
-                      $rs1 = intval($nbday1);
-
-                      if ($type == 'due') {
-                        $level = $rs1 - $limit;
-                      } else {
-                        $level = $rs1;
-                      }
-                      $coo = $limit;
-                      $rs1 = $rs1 - $limit;
-
-                      if ($level >= 0) { ?>
-
-                        <tr>
-                          <td><?php echo $row['customer_id']; ?></td>
-                          <td><?php echo $row2['name']; ?></td>
-                          <td><?php echo $row['invoice_no']; ?><br>
-                            <span class="pull-right badge bg-green"><?php echo $row2['lorry_no']; ?> </span>
-                          </td>
-                          <td><?php echo $row2['date']; ?></td>
-                          <?php
-                          $tot += $row['amount'] - $row['pay_amount'];
-                          ?>
-                          <td><?php echo $row['credit_period'];  ?> Day</td>
-                          <td><?php echo number_format($row['amount'] - $row['pay_amount'], 2);
-                              $b_tot += $row['amount'] - $row['pay_amount'];
-                              if ($row['pay_amount'] > '0') { ?><span class="pull-right badge bg-black"><?php echo $row['pay_amount']; ?></span><?php } ?></td>
-                          <td><?php echo $rs1;  ?> Day</td>
-                          <td><?php echo $row['memo']; ?></td>
-                          <td>
-                            <a href="bill2.php?invo=<?php echo base64_encode($row2['invoice_number']); ?>" title="Click to View" class="btn btn-primary btn-sm fa fa-eye"></a>
-                          </td>
-                        </tr>
-                    <?php
-                      }
-                    }
+                  if ($type == 'due') {
+                    $level = $rs1 - $limit;
+                  } else {
+                    $level = $rs1;
                   }
+                  $coo = $limit;
+                  $rs1 = $rs1 - $limit;
 
-                  if ($b_tot > 1) {
-                    ?>
-                    <tr style="background-color: rgb(var(--bg-light-70));">
-                      <th><?php echo $cus; ?></th>
-                      <th>Total</th>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td><span class="pull-right badge bg-red"><?php echo number_format($b_tot, 1); ?></span></td>
-                      <td></td>
-                      <td></td>
+                  if ($level >= 0) { ?>
+
+                    <tr>
+                      <td><?php echo $row['customer_id']; ?></td>
+                      <td><?php echo $row2['name']; ?></td>
+                      <td><?php echo $row['invoice_no']; ?><br>
+                        <span class="pull-right badge bg-green"><?php echo $row2['lorry_no']; ?> </span>
+                      </td>
+                      <td><?php echo $row2['date']; ?></td>
+                      <?php
+                      $tot += $row['amount'] - $row['pay_amount'];
+                      ?>
+                      <td><?php echo $row['credit_period'];  ?> Day</td>
+                      <td><?php echo number_format($row['amount'] - $row['pay_amount'], 2);
+                          $b_tot += $row['amount'] - $row['pay_amount'];
+                          if ($row['pay_amount'] > '0') { ?><span class="pull-right badge bg-black"><?php echo $row['pay_amount']; ?></span><?php } ?></td>
+                      <td><?php echo $rs1;  ?> Day</td>
+                      <td><?php echo $row['memo']; ?></td>
                       <td>
-                        <a href="sales_credit_rp_print.php?id=<?php echo base64_encode($cus); ?>" title="Click to View " class="btn btn-warning btn-sm fa fa-eye"></a>
+                        <a href="bill2.php?invo=<?php echo base64_encode($row2['invoice_number']); ?>" title="Click to View" class="btn btn-primary btn-sm fa fa-eye"></a>
                       </td>
                     </tr>
                 <?php
                   }
-                } ?>
+                }
+              }
 
-              </tbody>
+              if ($b_tot > 1) {
+                ?>
+                <tr style="background-color: rgb(var(--bg-light-70));">
+                  <th><?php echo $cus; ?></th>
+                  <th>Total</th>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td><span class="pull-right badge bg-red"><?php echo number_format($b_tot, 1); ?></span></td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    <a href="sales_credit_rp_print.php?id=<?php echo base64_encode($cus); ?>" title="Click to View " class="btn btn-warning btn-sm fa fa-eye"></a>
+                  </td>
+                </tr>
+            <?php
+              }
+            } ?>
+
+            </tbody>
 
             </table>
 
