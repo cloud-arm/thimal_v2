@@ -277,7 +277,7 @@ include("connect.php");
                       $pay_type = $row['type'];
                       $action = $row['action'];
 
-                      $date = $row['date'];
+                      $date = $row2['date'];
                       $now =  date("Y-m-d");
                       $start = strtotime($date);
                       $end = strtotime($now);
@@ -297,11 +297,11 @@ include("connect.php");
 
                         <tr>
                           <td><?php echo $row['customer_id']; ?></td>
-                          <td><?php echo $row['name']; ?></td>
+                          <td><?php echo $row2['name']; ?></td>
                           <td><?php echo $row['sales_id']; ?><br>
-                            <span class="pull-right badge bg-green"><?php echo $row['lorry_no']; ?> </span>
+                            <span class="pull-right badge bg-green"><?php echo $row2['lorry_no']; ?> </span>
                           </td>
-                          <td><?php echo $row['date']; ?></td>
+                          <td><?php echo $row2['date']; ?></td>
                           <?php
                           $tot += $row['amount'] - $row['pay_amount'];
                           ?>
@@ -312,7 +312,7 @@ include("connect.php");
                           <td><?php echo $rs1;  ?> Day</td>
                           <td><?php echo $row['memo']; ?></td>
                           <td>
-                            <a href="bill2.php?invo=<?php echo base64_encode($row['invoice_number']); ?>" title="Click to View" class="btn btn-primary btn-sm fa fa-eye"></a>
+                            <a href="bill2.php?invo=<?php echo base64_encode($row2['invoice_number']); ?>" title="Click to View" class="btn btn-primary btn-sm fa fa-eye"></a>
                           </td>
                         </tr>
 
