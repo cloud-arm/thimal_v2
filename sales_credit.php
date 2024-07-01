@@ -417,7 +417,7 @@ include("connect.php");
         "buttons": ["excel", "pdf", "print"]
       }).buttons().container().appendTo('#tbl_btn');
 
-      $("div.dt-buttons.btn-group").append('<a href="sales_credit_age_print.php?type=<?php echo $type ?>&cus=<?php echo $customer_id ?>&group=<?php echo $group ?>&lorry=<?php echo $lorry ?>&customer_type=<?php echo $customer_type ?>" title="Click to Print" class="btn btn-secondary buttons-html5">Print (Age)</a>');
+      // $("div.dt-buttons.btn-group").append('<a href="sales_credit_age_print.php?type=<?php echo $type ?>&cus=<?php echo $customer_id ?>&group=<?php echo $group ?>&lorry=<?php echo $lorry ?>&customer_type=<?php echo $customer_type ?>" title="Click to Print" class="btn btn-secondary buttons-html5">Print (Age)</a>');
 
       $(".select2").select2();
 
