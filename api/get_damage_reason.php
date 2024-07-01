@@ -10,7 +10,6 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 try {
     // Prepare and execute the SQL query
     $result = $db->prepare("SELECT * FROM damage_reason ");
-    $result->bindParam(':id', $id);
     $result->execute();
 
     // Fetch the results and create an array

@@ -8,6 +8,39 @@ damage($db);
 employee($db);
 loading($db);
 loading_product($db);
+expenses_type($db);
+
+
+
+function expenses_type($db)
+{
+    echo "<h1>Expenses type List Testing</h1>";
+
+    // Fetch data from the API
+    $api_url = 'https://thimal.cloudarmsoft.com/main/pages/v2/api/get_expenses_type.php';
+
+    $api_data = api_data($api_url);
+
+    // Fetch data from the database
+    $db_data = array();
+    $result = $db->prepare("SELECT id,type_id,name FROM expenses_sub_type WHERE type_id = '2' ");
+    $result->execute();
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $db_data[] = $row;
+    }
+
+    // Display the fetched API data
+    test_array($api_data, "expenses_type");
+
+    // Compare API data and database data
+    $api_data_normalized = normalize_data($api_data);
+    $db_data_normalized = normalize_data($db_data);
+
+    $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+    test_data($differences);
+}
 
 
 function loading_product($db)

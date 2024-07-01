@@ -6,24 +6,20 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-//echo $r_data[0];
-//$user=$_POST['user'];
 
+try {
+    // Prepare and execute the SQL query
+    $result = $db->prepare("SELECT id,type_id,name FROM expenses_sub_type WHERE type_id = '2'");
+    $result->execute();
 
-$result_array=[];
-$result = $db->prepare("SELECT * FROM expenses_sub_type WHERE type_id = '2'");
-$result->bindParam(':userid', $res);
-$result->execute();
-for($i=0; $row = $result->fetch(); $i++){
-    $result_array[] = array (
-        "id" => $row['id'],
-        "type_id" => $row['type_id'],
-        "name" => $row['name'],
-    );
+    // Fetch the results and create an array
+    $result_array = array();
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $result_array[] = $row;
     }
- 
 
-
-
-
-echo (json_encode ( $result_array ));
+    // Encode the array into JSON and output it
+    echo json_encode($result_array);
+} catch (PDOException $e) {
+    echo json_encode(array("message" => "Error: " . $e->getMessage()));
+}
