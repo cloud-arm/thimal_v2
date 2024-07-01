@@ -9,7 +9,39 @@ employee($db);
 loading($db);
 loading_product($db);
 expenses_type($db);
+s_price($db);
 
+
+
+function s_price($db)
+{
+    echo "<h1>Special Price type List Testing</h1>";
+
+    // Fetch data from the API
+    $api_url = 'https://thimal.cloudarmsoft.com/main/pages/v2/api/get_sprice.php';
+
+    $api_data = api_data($api_url);
+
+    // Fetch data from the database
+    $db_data = array();
+    $result = $db->prepare("SELECT customer AS customer_name,id,product_id,product_name,customer_id,n_price,price FROM special_price ");
+    $result->execute();
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $db_data[] = $row;
+    }
+
+    // Display the fetched API data
+    test_array($api_data, "special_price");
+
+    // Compare API data and database data
+    $api_data_normalized = normalize_data($api_data);
+    $db_data_normalized = normalize_data($db_data);
+
+    $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+    test_data($differences);
+}
 
 
 function expenses_type($db)
