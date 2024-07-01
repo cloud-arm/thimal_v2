@@ -247,9 +247,16 @@ include("connect.php");
                   $payment[$row['customer_id']][] = ["customer_id" => $row['customer_id'], "memo" => $row['memo'], "sales_id" => $row['sales_id'], "type" => $row['type'], "action" => $row['action'], "pay_amount" => $row['pay_amount'], "amount" => $row['amount'], "transaction_id" => $row['transaction_id'], "credit_period" => $row['credit_period'], "invoice_no" => $row['invoice_no'], "invoice_number" => $row['invoice_number'], "date" => $row['sales_date'], "name" => $row['name'], "lorry_no" => $row['lorry_no'],];
                 }
 
-                echo json_encode($payment);
 
-                ?>
+                foreach ($customer as $cus) {
+                  $b_tot = 0;
+                  $pay_tot = 0;
+
+                  foreach ($payment[$cus] as $row) {
+
+                    echo json_encode($row);
+                  }
+                } ?>
 
               </tbody>
 
