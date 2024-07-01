@@ -77,17 +77,13 @@ include("connect.php");
 
                 <div class="col-md-4">
                   <div class="form-group">
-                    <div class="input-group">
-                      <div class="input-group-addon">
-                        <label>Customer</label>
-                      </div>
-                      <select class="form-control select2 hidden-search" name="filter" class="form-control" id="p_type" onchange="view_payment_date(this.value);">
-                        <option value="all">All Customer</option>
-                        <option value="group">Customer Group</option>
-                        <option value="type">Customer Type</option>
-                        <option value="cus">One Customer</option>
-                      </select>
-                    </div>
+                    <label>Customer</label>
+                    <select class="form-control select2 hidden-search" name="filter" class="form-control" id="p_type" onchange="view_payment_date(this.value);">
+                      <option value="all">All Customer</option>
+                      <option value="group">Customer Group</option>
+                      <option value="type">Customer Type</option>
+                      <option value="cus">One Customer</option>
+                    </select>
                   </div>
                 </div>
 
