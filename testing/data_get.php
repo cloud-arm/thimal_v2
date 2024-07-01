@@ -1,5 +1,6 @@
 <?php
 include('../connect.php');
+echo "<title>TESTING</title>";
 
 product($db);
 customer($db);
@@ -10,6 +11,42 @@ loading($db);
 loading_product($db);
 expenses_type($db);
 s_price($db);
+loading_action($db);
+
+
+function loading_action($db)
+{
+    echo "<h1>Loading action List Testing</h1>";
+
+    // Fetch data from the API
+    $api_url = 'https://thimal.cloudarmsoft.com/main/pages/v2/api/loading_action.php';
+    $id = 8097;
+    $type = " ";
+    $post_data = array('id' => $id, 'type' => $type);
+
+    $api_data = api_data($api_url, $post_data);
+
+    // Fetch data from the database
+    $db_data = array();
+    $result = $db->prepare("SELECT transaction_id AS loading_id, helper1 AS helper1_id, helper2 AS helper2_id, driver AS driver_id, root_id, lorry_id, lorry_no FROM loading WHERE transaction_id = :id  ");
+    $result->bindParam(':id', $id);
+    $result->execute();
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $db_data[] = $row;
+    }
+
+    // Display the fetched API data
+    test_array($api_data, "loading_product");
+
+    // Compare API data and database data
+    $api_data_normalized = normalize_data($api_data);
+    $db_data_normalized = normalize_data($db_data);
+
+    $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+    test_data($differences);
+}
 
 
 
