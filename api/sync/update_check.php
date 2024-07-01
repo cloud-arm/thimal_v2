@@ -7,7 +7,7 @@ header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 
-$id=$_POST['id'];
+$id = $_POST['id'];
 // Prepare and execute the SQL query
 $result = $db->prepare("SELECT * FROM update_record WHERE id > '$id' ORDER BY id DESC LIMIT 1");
 $result->execute();
@@ -17,4 +17,3 @@ $data = $result->fetchAll(PDO::FETCH_ASSOC);
 
 // Output the JSON encoded data
 echo json_encode($data);
-
