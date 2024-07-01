@@ -111,7 +111,6 @@ include("connect.php");
                   <div class="form-group">
                     <label>Customer Group </label>
                     <select class="form-control select2" name="group">
-                      <option value="all">All Group</option>
 
                       <?php
                       $result = $db->prepare("SELECT * FROM customer_category ");
@@ -131,7 +130,6 @@ include("connect.php");
                   <div class="form-group">
                     <label>Customer Type</label>
                     <select class="form-control select2 hidden-search" name="customer_type">
-                      <option value="all">All Type</option>
                       <option value="1">Channel</option>
                       <option value="2">Commercial</option>
                       <option value="3">Apartment</option>
@@ -143,7 +141,6 @@ include("connect.php");
                   <div class="form-group">
                     <label>Customer</label>
                     <select class="form-control select2" name="cus">
-                      <option value="all">All Customer</option>
                       <?php
                       $result = $db->prepare("SELECT * FROM customer ");
                       $result->bindParam(':id', $res);
