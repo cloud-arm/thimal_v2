@@ -183,137 +183,60 @@ include("connect.php");
               </thead>
 
               <tbody>
-            <?php
-            $tot = 0;
-            $pay_type = "";
+                <?php
+                $tot = 0;
+                $pay_type = "";
 
-            if ($customer_id == "all") {
-              if ($group == "all") {
+                if ($customer_id == "all") {
+                  if ($group == "all") {
 
-                if ($customer_type == "all") {
-                  $customer_fill = " ";
+                    if ($customer_type == "all") {
+                      $customer_fill = " ";
+                    } else {
+                      $customer_fill = " AND customer.type='$customer_type' ";
+                    }
+                  } else {
+                    $customer_fill = " AND customer.category='$group' ";
+                  }
                 } else {
-                  $customer_fill = " WHERE type='$customer_type' ";
+                  $customer_fill = " AND customer.customer_id='$customer_id' ";
                 }
-              } else {
-                $customer_fill = " WHERE category='$group' ";
-              }
-            } else {
-              $customer_fill = " WHERE customer_id='$customer_id' ";
-            }
-
-            $customer = array();
-            $payment = array();
-            $sales = array();
-
-            $sql1 = "SELECT customer_id FROM customer $customer_fill ORDER BY category DESC";
-            $sql1 = "SELECT customer_id FROM payment WHERE action='2' AND type='credit' AND credit_balance > 0 ORDER BY customer_id";
-            $sql2 = "SELECT customer_id,memo,sales_id,type,action,pay_amount,amount,transaction_id,credit_period,invoice_no FROM payment WHERE action='2' AND type='credit' AND credit_balance > 0  ORDER BY customer_id";
-
-            $result = $db->prepare($sql1);
-            $result->bindParam(':id', $id);
-            $result->execute();
-            for ($i = 0; $row = $result->fetch(); $i++) {
-
-              $customer[] = $row['customer_id'];
-            }
-
-            $result = $db->prepare($sql2);
-            $result->bindParam(':id', $id);
-            $result->execute();
-            for ($i = 0; $row = $result->fetch(); $i++) {
-
-              $payment[$row['customer_id']][] = ["customer_id" => $row['customer_id'], "memo" => $row['memo'], "sales_id" => $row['sales_id'], "type" => $row['type'], "action" => $row['action'], "pay_amount" => $row['pay_amount'], "amount" => $row['amount'], "transaction_id" => $row['transaction_id'], "credit_period" => $row['credit_period'], "invoice_no" => $row['invoice_no']];
-            }
-
-            // echo json_encode($payment);
-
-            foreach ($customer as $cus) {
-              $b_tot = 0;
-              $pay_tot = 0;
-
-              foreach ($payment[$cus] as $row) {
-
-                $invoice = $row['invoice_no'];
-                $limit = $row['credit_period'];
 
                 if ($lorry == 'all') {
                   $lorry_fill = " ";
                 } else {
-                  $lorry_fill = " AND lorry_no='$lorry' ";
+                  $lorry_fill = " AND sales.lorry_no = '$lorry' ";
                 }
 
-                $result2 = $db->prepare("SELECT date,name,lorry_no,invoice_number FROM sales WHERE action='1' AND invoice_number='$invoice' " . $lorry_fill);
-                $result2->bindParam(':userid', $d2);
-                $result2->execute();
-                for ($i = 0; $row2 = $result2->fetch(); $i++) {
+                $customer = array();
+                $payment = array();
+                $sales = array();
 
-                  $pay_type = $row['type'];
-                  $action = $row['action'];
+                $sql1 = "SELECT customer_id FROM customer $customer_fill ORDER BY category DESC";
+                $sql1 = "SELECT customer_id FROM payment JOIN customer ON customer.customer_id = payment.customer_id WHERE payment.action='2' AND payment.type='credit' AND payment.credit_balance > 0 $customer_fill ORDER BY customer.customer_id";
+                $sql2 = "SELECT *,sales.date AS sales_date FROM payment JOIN sales ON payment.sales_id = sales.transaction_id WHERE payment.action='2' AND sales.action='1' AND payment.type='credit' AND payment.credit_balance > 0  ORDER BY payment.customer_id" . $lorry_fill;
 
-                  $date = $row2['date'];
-                  $now =  date("Y-m-d");
-                  $start = strtotime($date);
-                  $end = strtotime($now);
-                  $time_dff = abs($end - $start);
-                  $intval = $time_dff / 86400;
-                  $rs1 = intval($intval);
+                $result = $db->prepare($sql1);
+                $result->bindParam(':id', $id);
+                $result->execute();
+                for ($i = 0; $row = $result->fetch(); $i++) {
 
-                  if ($type == 'due') {
-                    $level = $rs1 - $limit;
-                  } else {
-                    $level = $rs1;
-                  }
-                  $coo = $limit;
-                  $rs1 = $rs1 - $limit;
-
-                  if ($level >= 0) { ?>
-
-                    <tr>
-                      <td><?php echo $row['customer_id']; ?></td>
-                      <td><?php echo $row2['name']; ?></td>
-                      <td><?php echo $row['invoice_no']; ?><br>
-                        <span class="pull-right badge bg-green"><?php echo $row2['lorry_no']; ?> </span>
-                      </td>
-                      <td><?php echo $row2['date']; ?></td>
-                      <?php
-                      $tot += $row['amount'] - $row['pay_amount'];
-                      ?>
-                      <td><?php echo $row['credit_period'];  ?> Day</td>
-                      <td><?php echo number_format($row['amount'] - $row['pay_amount'], 2);
-                          $b_tot += $row['amount'] - $row['pay_amount'];
-                          if ($row['pay_amount'] > '0') { ?><span class="pull-right badge bg-black"><?php echo $row['pay_amount']; ?></span><?php } ?></td>
-                      <td><?php echo $rs1;  ?> Day</td>
-                      <td><?php echo $row['memo']; ?></td>
-                      <td>
-                        <a href="bill2.php?invo=<?php echo base64_encode($row2['invoice_number']); ?>" title="Click to View" class="btn btn-primary btn-sm fa fa-eye"></a>
-                      </td>
-                    </tr>
-                <?php
-                  }
+                  $customer[] = $row['customer_id'];
                 }
-              }
 
-              if ($b_tot > 1) {
+                $result = $db->prepare($sql2);
+                $result->bindParam(':id', $id);
+                $result->execute();
+                for ($i = 0; $row = $result->fetch(); $i++) {
+
+                  $payment[$row['customer_id']][] = ["customer_id" => $row['customer_id'], "memo" => $row['memo'], "sales_id" => $row['sales_id'], "type" => $row['type'], "action" => $row['action'], "pay_amount" => $row['pay_amount'], "amount" => $row['amount'], "transaction_id" => $row['transaction_id'], "credit_period" => $row['credit_period'], "invoice_no" => $row['invoice_no'], "invoice_number" => $row['invoice_number'], "date" => $row['sales_date'], "name" => $row['name'], "lorry_no" => $row['lorry_no'],];
+                }
+
+                echo json_encode($payment);
+
                 ?>
-                <tr style="background-color: rgb(var(--bg-light-70));">
-                  <th><?php echo $cus; ?></th>
-                  <th>Total</th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td><span class="pull-right badge bg-red"><?php echo number_format($b_tot, 1); ?></span></td>
-                  <td></td>
-                  <td></td>
-                  <td>
-                    <a href="sales_credit_rp_print.php?id=<?php echo base64_encode($cus); ?>" title="Click to View " class="btn btn-warning btn-sm fa fa-eye"></a>
-                  </td>
-                </tr>
-            <?php
-              }
-            } ?>
 
-            </tbody>
+              </tbody>
 
             </table>
 
