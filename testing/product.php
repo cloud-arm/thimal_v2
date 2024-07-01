@@ -35,7 +35,7 @@ echo "<br><br><br>";
 // Display the fetched database data
 echo "<h1>Product List for Datatable</h1><ul>";
 foreach ($db_data as $product) {
-    echo "<li>[{$product['product_id']}] {$product['name']} - Rs. {$product['price']} (Quantity: {$product['qty']})</li>";
+    echo "<li>[{$product['id']}] {$product['name']} - Rs. {$product['price']} (Quantity: {$product['qty']})</li>";
 }
 echo "</ul>";
 
