@@ -6,7 +6,6 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-$load_id = 1;
 
 // Prepare and execute the SQL query
 $result = $db->prepare("SELECT * FROM update_record ORDER BY id DESC LIMIT 1");
@@ -17,4 +16,3 @@ $data = $result->fetchAll(PDO::FETCH_ASSOC);
 
 // Output the JSON encoded data
 echo json_encode($data);
-
