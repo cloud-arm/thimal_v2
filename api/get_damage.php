@@ -6,31 +6,20 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-//echo $r_data[0];
-//$user=$_POST['user'];
 
+try {
+    // Prepare and execute the SQL query
+    $result = $db->prepare("SELECT cylinder_type AS product_name, id, complain_no, customer_name, customer_id, product_id, reason, location, action, cylinder_no  FROM damage ");
+    $result->execute();
 
-$result_array=[];
-$result = $db->prepare("SELECT * FROM damage ");
-$result->bindParam(':userid', $res);
-$result->execute();
-for($i=0; $row = $result->fetch(); $i++){
-    $result_array[] = array (
-        "id" => $row['id'],
-        "complain_no" => $row['complain_no'],
-        "customer_name" => $row['customer_name'],
-        "customer_id" => $row['customer_id'],
-        "product_id" => $row['product_id'],
-        "product_name" => $row['cylinder_type'],
-        "reason" => $row['reason'],
-        "location" => $row['location'],
-        "action" => $row['action'],
-        "cylinder_no" => $row['cylinder_no'],
-    );
+    // Fetch the results and create an array
+    $result_array = array();
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $result_array[] = $row;
     }
- 
 
-
-
-
-echo (json_encode ( $result_array ));
+    // Encode the array into JSON and output it
+    echo json_encode($result_array);
+} catch (PDOException $e) {
+    echo json_encode(array("message" => "Error: " . $e->getMessage()));
+}

@@ -3,6 +3,43 @@ include('../connect.php');
 
 product($db);
 customer($db);
+damage($db);
+
+function damage($db)
+{
+    echo "<h1>Damage List Testing</h1>";
+
+    // Fetch data from the API
+    $api_url = 'https://thimal.cloudarmsoft.com/main/pages/v2/api/get_damage.php';
+
+    $api_data = api_data($api_url);
+
+    // Fetch data from the database
+    $db_data = array();
+    $result = $db->prepare("SELECT cylinder_type AS product_name, id, complain_no, customer_name, customer_id, product_id, reason, location, action, cylinder_no  FROM damage ");
+    $result->execute();
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $db_data[] = $row;
+    }
+
+    // Display the fetched API data
+    if (is_array($api_data)) {
+
+        echo "Success to fetch damage data from API.";
+    } else {
+        echo "Failed to fetch damage data from API.";
+    }
+
+    // Compare API data and database data
+    $api_data_normalized = normalize_data($api_data);
+    $db_data_normalized = normalize_data($db_data);
+
+    $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+    test_data($differences);
+}
+
 
 function customer($db)
 {
@@ -38,6 +75,7 @@ function customer($db)
 
     test_data($differences);
 }
+
 
 function product($db)
 {
