@@ -36,19 +36,25 @@ include("connect.php");
           <?php
           if (isset($_GET['type'])) {
 
-            $type = $_GET['type'];
-            $customer_id = $_GET['cus'];
-            $group = $_GET['group'];
+            if ($filter == 'group') {
+              $group = $_GET['group']; //customer category id
+            }
+
+            if ($filter == 'type') {
+              $customer_type = $_GET['customer_type']; //customer type 1/2/3
+            }
+
+            if ($filter == 'cus') {
+              $customer_id = $_GET['cus']; // customer id
+            }
+
+            $type = $_GET['type']; // credit type
             $lorry = $_GET['lorry']; // lorry id
-            $customer_type = $_GET['customer_type'];
           } else {
-            $d1 = date('Y-m-d'); //date one
-            $d2 = date('Y-m-d'); //date two
+
             $type = 'all';
-            $customer_id = 'all';
-            $group = 'all';
+            $filter = 'all';
             $lorry = 'all'; // lorry id
-            $customer_type = 'all';
           }
 
           $_SESSION['SESS_BACK'] = 'sales_credit.php?type=' . $type . '&cus=' . $customer_id . '&lorry=' . $lorry . '&group=' . $group . '&lorry=' . $lorry . '&customer_type=' . $customer_type;
@@ -71,43 +77,19 @@ include("connect.php");
 
                 <div class="col-md-4">
                   <div class="form-group">
-                    <label>Customer</label>
-                    <select class="form-control select2" name="cus">
-                      <option value="all">All Customer</option>
-                      <?php
-                      $result = $db->prepare("SELECT * FROM customer ");
-                      $result->bindParam(':id', $res);
-                      $result->execute();
-                      for ($i = 0; $row = $result->fetch(); $i++) {
-                      ?>
-                        <option value="<?php echo $row['customer_id']; ?>"><?php echo $row['customer_name']; ?> </option>
-                      <?php
-                      }
-                      ?>
-                    </select>
+                    <div class="input-group">
+                      <div class="input-group-addon">
+                        <label>Customer</label>
+                      </div>
+                      <select class="form-control select2 hidden-search" name="filter" class="form-control" id="p_type" onchange="view_payment_date(this.value);">
+                        <option value="all">All Customer</option>
+                        <option value="group">Customer Group</option>
+                        <option value="type">Customer Type</option>
+                        <option value="cus">One Customer</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
-
-                <div class="col-md-4">
-                  <div class="form-group">
-                    <label>Customer Group </label>
-                    <select class="form-control select2" name="group">
-                      <option value="all">All Group</option>
-
-                      <?php
-                      $result = $db->prepare("SELECT * FROM customer_category ");
-                      $result->bindParam(':userid', $res);
-                      $result->execute();
-                      for ($i = 0; $row = $result->fetch(); $i++) {
-                      ?>
-                        <option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?> </option>
-                      <?php
-                      }
-                      ?>
-                    </select>
-                  </div>
-                </div>
-
 
                 <div class="col-md-4">
                   <div class="form-group">
@@ -129,7 +111,27 @@ include("connect.php");
                   </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-4" id="group_view" style="display:none;">
+                  <div class="form-group">
+                    <label>Customer Group </label>
+                    <select class="form-control select2" name="group">
+                      <option value="all">All Group</option>
+
+                      <?php
+                      $result = $db->prepare("SELECT * FROM customer_category ");
+                      $result->bindParam(':userid', $res);
+                      $result->execute();
+                      for ($i = 0; $row = $result->fetch(); $i++) {
+                      ?>
+                        <option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?> </option>
+                      <?php
+                      }
+                      ?>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-md-4" id="type_view" style="display:none;">
                   <div class="form-group">
                     <label>Customer Type</label>
                     <select class="form-control select2 hidden-search" name="customer_type">
@@ -137,6 +139,25 @@ include("connect.php");
                       <option value="1">Channel</option>
                       <option value="2">Commercial</option>
                       <option value="3">Apartment</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-md-4" id="cus_view" style="display:none;">
+                  <div class="form-group">
+                    <label>Customer</label>
+                    <select class="form-control select2" name="cus">
+                      <option value="all">All Customer</option>
+                      <?php
+                      $result = $db->prepare("SELECT * FROM customer ");
+                      $result->bindParam(':id', $res);
+                      $result->execute();
+                      for ($i = 0; $row = $result->fetch(); $i++) {
+                      ?>
+                        <option value="<?php echo $row['customer_id']; ?>"><?php echo $row['customer_name']; ?> </option>
+                      <?php
+                      }
+                      ?>
                     </select>
                   </div>
                 </div>
@@ -187,19 +208,18 @@ include("connect.php");
                 $tot = 0;
                 $pay_type = "";
 
-                if ($customer_id == "all") {
-                  if ($group == "all") {
+                if ($filter == "all") {
 
-                    if ($customer_type == "all") {
-                      $customer_fill = " ";
-                    } else {
-                      $customer_fill = " AND customer.type='$customer_type' ";
-                    }
-                  } else {
-                    $customer_fill = " AND customer.category='$group' ";
-                  }
+                  $customer_fill = " ";
+                } else if ($filter == "group") {
+
+                  $customer_fill = " AND customer.category = '$group' ";
+                } else if ($filter == "type") {
+
+                  $customer_fill = " AND customer.type = '$customer_type' ";
                 } else {
-                  $customer_fill = " AND customer.customer_id='$customer_id' ";
+
+                  $customer_fill = " AND customer.customer_id = '$customer_id' ";
                 }
 
                 if ($lorry == 'all') {
@@ -292,6 +312,26 @@ include("connect.php");
   <script src="https://dev.colorbiz.org/ashen/cdn/main/dist/js/DarkTheme.js"></script>
   <!-- page script -->
   <script>
+    function view_payment_date(type) {
+      if (type == 'group') {
+        document.getElementById('group_view').style.display = 'block';
+        document.getElementById('type_view').style.display = 'none';
+        document.getElementById('cus_view').style.display = 'none';
+      } else if (type == 'type') {
+        document.getElementById('type_view').style.display = 'block';
+        document.getElementById('group_view').style.display = 'none';
+        document.getElementById('cus_view').style.display = 'none';
+      } else if (type == 'cus') {
+        document.getElementById('type_view').style.display = 'none';
+        document.getElementById('group_view').style.display = 'none';
+        document.getElementById('cus_view').style.display = 'block';
+      } else {
+        document.getElementById('type_view').style.display = 'none';
+        document.getElementById('group_view').style.display = 'none';
+        document.getElementById('cus_view').style.display = 'none';
+      }
+    }
+
     $(function() {
       $("#example2").DataTable({
         "responsive": true,
