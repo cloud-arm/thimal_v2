@@ -2,6 +2,7 @@
 include('../connect.php');
 
 product($db);
+customer($db);
 
 function customer($db)
 {
