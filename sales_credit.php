@@ -90,7 +90,7 @@ include("connect.php");
                 <div class="col-md-4">
                   <div class="form-group">
                     <label>Lorry </label>
-                    <select class="form-control select2" name="lorry">
+                    <select class="form-control select2" name="lorry" style="width: 100%;">
                       <option value="all"> All Lorry </option>
 
                       <?php
@@ -110,7 +110,7 @@ include("connect.php");
                 <div class="col-md-4" id="group_view" style="display:none;">
                   <div class="form-group">
                     <label>Customer Group </label>
-                    <select class="form-control select2" name="group">
+                    <select class="form-control select2" name="group" style="width: 100%;">
 
                       <?php
                       $result = $db->prepare("SELECT * FROM customer_category ");
@@ -129,7 +129,7 @@ include("connect.php");
                 <div class="col-md-4" id="type_view" style="display:none;">
                   <div class="form-group">
                     <label>Customer Type</label>
-                    <select class="form-control select2 hidden-search" name="customer_type">
+                    <select class="form-control select2 hidden-search" name="customer_type" style="width: 100%;">
                       <option value="1">Channel</option>
                       <option value="2">Commercial</option>
                       <option value="3">Apartment</option>
@@ -140,7 +140,7 @@ include("connect.php");
                 <div class="col-md-4" id="cus_view" style="display:none;">
                   <div class="form-group">
                     <label>Customer</label>
-                    <select class="form-control select2" name="cus">
+                    <select class="form-control select2" name="cus" style="width: 100%;">
                       <?php
                       $result = $db->prepare("SELECT * FROM customer ");
                       $result->bindParam(':id', $res);
