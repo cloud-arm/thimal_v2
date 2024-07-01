@@ -9,7 +9,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 try {
     // Prepare and execute the SQL query
-    $result = $db->prepare("SELECT cylinder_type AS product_name, id, complain_no, customer_name, customer_id, product_id, reason, location, action, cylinder_no  FROM damage ");
+    $result = $db->prepare("SELECT cylinder_type AS product_name, sn, complain_no, customer_name, customer_id, product_id, reason, location, action, cylinder_no  FROM damage ");
     $result->execute();
 
     // Fetch the results and create an array
