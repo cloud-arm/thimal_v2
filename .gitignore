@@ -1,10 +1,9 @@
 connect.php
 .DS_Store
-*.sql
-update_data.php
-test.php
+# update_data.php
+z_*
 new
 selenium/__pycache__
-testing
+# testing
 phpqrcode
 log
