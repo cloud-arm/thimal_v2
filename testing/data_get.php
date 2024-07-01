@@ -12,6 +12,48 @@ loading_product($db);
 expenses_type($db);
 s_price($db);
 loading_action($db);
+credit($db);
+
+
+
+function credit($db)
+{
+    echo "<h1>Credit type List Testing</h1>";
+
+    // Fetch data from the API
+    $api_url = 'https://thimal.cloudarmsoft.com/main/pages/v2/api/get_credit.php';
+
+    $api_data = api_data($api_url);
+
+    // Fetch data from the database
+    $db_data = array();
+    $result = $db->prepare("SELECT * FROM payment JOIN customer ON payment.customer_id=customer.customer_id WHERE payment.type='credit' AND payment.pay_amount < payment.amount AND payment.action > 0 AND payment.dll = 0 ");
+    $result->execute();
+    for ($i = 0; $row = $result->fetch(); $i++) {
+        $db_data[] = array(
+            "name" => $row['customer_name'],
+            "cus_id" => $row['customer_id'],
+            "amount" => $row['amount'],
+            "balance" => $row['amount'] - $row['pay_amount'],
+            "type" => $row['type'],
+            "invoice_no" => $row['invoice_no'],
+            "date" => $row['date'],
+            "id" => $row['transaction_id'],
+        );
+    }
+
+    // Display the fetched API data
+    test_array($api_data, "special_price");
+
+    // Compare API data and database data
+    $api_data_normalized = normalize_data($api_data);
+    $db_data_normalized = normalize_data($db_data);
+
+    $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+    test_data($differences);
+}
 
 
 function loading_action($db)
@@ -47,7 +89,6 @@ function loading_action($db)
 
     test_data($differences);
 }
-
 
 
 function s_price($db)
