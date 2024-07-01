@@ -20,24 +20,12 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 }
 
 // Display the fetched API data
-echo "<h4>Product List for API</h4><ul>";
 if (is_array($api_data)) {
-    foreach ($api_data as $product) {
-        echo "<li>[{$product['id']}] {$product['name']} - Rs. {$product['price']} (Quantity: {$product['qty']})</li>";
-    }
-    echo "</ul>";
+    
+    echo "Success to fetch product data from API.";
 } else {
     echo "Failed to fetch product data from API.";
 }
-
-echo "<br><br><br>";
-
-// Display the fetched database data
-echo "<h4>Product List for Datatable</h4><ul>";
-foreach ($db_data as $product) {
-    echo "<li>[{$product['id']}] {$product['name']} - Rs. {$product['price']} (Quantity: {$product['qty']})</li>";
-}
-echo "</ul>";
 
 // Compare API data and database data
 $api_data_normalized = array_map(function ($product) {
@@ -48,10 +36,10 @@ $db_data_normalized = array_map(function ($product) {
     return "{$product['id']}_{$product['name']}_{$product['price']}_{$product['qty']}";
 }, $db_data);
 
-echo "<br><br><br>";
+echo "<br><br>";
 
 if (count(array_diff($api_data_normalized, $db_data_normalized)) === 0 && count(array_diff($db_data_normalized, $api_data_normalized)) === 0) {
-    echo "Testing successful..!";
+    echo '<h3 style="color: green;">Testing successful..!</h3>';
 } else {
-    echo "Testing failed..!";
+    echo '<h3 style="color: red;">Testing failed..!</h3>';
 }
