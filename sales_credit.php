@@ -228,89 +228,96 @@ include("connect.php");
                 $sales = array();
 
                 $sql1 = "SELECT customer_id FROM customer $customer_fill ORDER BY category DESC";
-                $sql1 = "SELECT payment.customer_id AS cus_id FROM payment JOIN customer ON customer.customer_id = payment.customer_id WHERE payment.action='2' AND payment.type='credit' AND payment.credit_balance > 0 $customer_fill ORDER BY customer.customer_id";
-                $sql2 = "SELECT *,sales.date AS sales_date FROM payment JOIN sales ON payment.sales_id = sales.transaction_id WHERE payment.action='2' AND sales.action='1' AND payment.type='credit' AND payment.credit_balance > 0  ORDER BY payment.customer_id" . $lorry_fill;
+                // $sql1 = "SELECT payment.customer_id AS cus_id FROM payment JOIN customer ON customer.customer_id = payment.customer_id WHERE payment.action='2' AND payment.type='credit' AND payment.credit_balance > 0 $customer_fill ORDER BY customer.customer_id";
+                // $sql2 = "SELECT *,sales.date AS sales_date FROM payment JOIN sales ON payment.sales_id = sales.transaction_id WHERE payment.action='2' AND sales.action='1' AND payment.type='credit' AND payment.credit_balance > 0  ORDER BY payment.customer_id" . $lorry_fill;
+
+                // $result = $db->prepare($sql1);
+                // $result->bindParam(':id', $id);
+                // $result->execute();
+                // for ($i = 0; $row = $result->fetch(); $i++) {
+
+                //   $customer[] = $row['cus_id'];
+                // }
+
+                // $result = $db->prepare($sql2);
+                // $result->bindParam(':id', $id);
+                // $result->execute();
+                // for ($i = 0; $row = $result->fetch(); $i++) {
+
+                //   $payment[$row['customer_id']][] = ["customer_id" => $row['customer_id'], "memo" => $row['memo'], "sales_id" => $row['sales_id'], "type" => $row['type'], "action" => $row['action'], "pay_amount" => $row['pay_amount'], "amount" => $row['amount'], "transaction_id" => $row['transaction_id'], "credit_period" => $row['credit_period'], "invoice_no" => $row['invoice_no'], "invoice_number" => $row['invoice_number'], "date" => $row['sales_date'], "name" => $row['name'], "lorry_no" => $row['lorry_no'],];
+                // }
 
                 $result = $db->prepare($sql1);
-                $result->bindParam(':id', $id);
+                $result->bindParam(':userid', $d2);
                 $result->execute();
-                for ($i = 0; $row = $result->fetch(); $i++) {
-
-                  $customer[] = $row['cus_id'];
-                }
-
-                $result = $db->prepare($sql2);
-                $result->bindParam(':id', $id);
-                $result->execute();
-                for ($i = 0; $row = $result->fetch(); $i++) {
-
-                  $payment[$row['customer_id']][] = ["customer_id" => $row['customer_id'], "memo" => $row['memo'], "sales_id" => $row['sales_id'], "type" => $row['type'], "action" => $row['action'], "pay_amount" => $row['pay_amount'], "amount" => $row['amount'], "transaction_id" => $row['transaction_id'], "credit_period" => $row['credit_period'], "invoice_no" => $row['invoice_no'], "invoice_number" => $row['invoice_number'], "date" => $row['sales_date'], "name" => $row['name'], "lorry_no" => $row['lorry_no'],];
-                }
-
-                foreach ($customer as $cus) {
+                for ($i = 0; $row_cus = $result->fetch(); $i++) {
+                  $cus = $row_cus['customer_id'];
+                  $limit = $row_cus['credit_period'];
                   $b_tot = 0;
                   $pay_tot = 0;
 
-                  foreach ($payment[$cus] as $row) {
-
-                    $invoice = $row['invoice_no'];
+                  $result1 = $db->prepare("SELECT memo,sales_id,type,action,customer_id,pay_amount,amount,transaction_id,credit_period,invoice_no FROM payment WHERE action='2' and type='credit' and credit_balance>0 and customer_id='$cus' ");
+                  $result1->bindParam(':userid', $d2);
+                  $result1->execute();
+                  for ($i = 0; $row = $result1->fetch(); $i++) {
+                    $sales_id = $row['sales_id'];
                     $limit = $row['credit_period'];
 
-                    // if ($lorry == 'all') {
-                    //   $lorry_fill = " ";
-                    // } else {
-                    //   $lorry_fill = " AND lorry_no='$lorry' ";
-                    // }
-
-                    // $result2 = $db->prepare("SELECT date,name,lorry_no,invoice_number FROM sales WHERE action='1' AND invoice_number='$invoice' " . $lorry_fill);
-                    // $result2->bindParam(':userid', $d2);
-                    // $result2->execute();
-                    // for ($i = 0; $row2 = $result2->fetch(); $i++) {
-
-                    $pay_type = $row['type'];
-                    $action = $row['action'];
-
-                    $date = $row['date'];
-                    $now =  date("Y-m-d");
-                    $start = strtotime($date);
-                    $end = strtotime($now);
-                    $time_dff = abs($end - $start);
-                    $intval = $time_dff / 86400;
-                    $rs1 = intval($intval);
-
-                    if ($type == 'due') {
-                      $level = $rs1 - $limit;
+                    if ($lorry == 'all') {
+                      $lorry_fill = " ";
                     } else {
-                      $level = $rs1;
+                      $lorry_fill = " AND sales.lorry_no = '$lorry' ";
                     }
-                    $coo = $limit;
-                    $rs1 = $rs1 - $limit;
 
-                    if ($level >= 0) { ?>
+                    $result2 = $db->prepare("SELECT date,name,lorry_no,invoice_number FROM sales WHERE action='1' AND transaction_id='$sales_id' " . $lorry_fill);
+                    $result2->bindParam(':userid', $d2);
+                    $result2->execute();
+                    for ($i = 0; $row2 = $result2->fetch(); $i++) {
 
-                      <tr>
-                        <td><?php echo $row['customer_id']; ?></td>
-                        <td><?php echo $row['name']; ?></td>
-                        <td><?php echo $row['sales_id']; ?><br>
-                          <span class="pull-right badge bg-green"><?php echo $row['lorry_no']; ?> </span>
-                        </td>
-                        <td><?php echo $row['date']; ?></td>
-                        <?php
-                        $tot += $row['amount'] - $row['pay_amount'];
-                        ?>
-                        <td><?php echo $row['credit_period'];  ?> Day</td>
-                        <td><?php echo number_format($row['amount'] - $row['pay_amount'], 2);
-                            $b_tot += $row['amount'] - $row['pay_amount'];
-                            if ($row['pay_amount'] > '0') { ?> / <span class="pull-right badge bg-black"><?php echo $row['pay_amount']; ?></span><?php } ?></td>
-                        <td><?php echo $rs1;  ?> Day</td>
-                        <td><?php echo $row['memo']; ?></td>
-                        <td>
-                          <a href="bill2.php?invo=<?php echo base64_encode($row['invoice_number']); ?>" title="Click to View" class="btn btn-primary btn-sm fa fa-eye"></a>
-                        </td>
-                      </tr>
+                      $pay_type = $row['type'];
+                      $action = $row['action'];
+
+                      $date = $row['date'];
+                      $now =  date("Y-m-d");
+                      $start = strtotime($date);
+                      $end = strtotime($now);
+                      $time_dff = abs($end - $start);
+                      $intval = $time_dff / 86400;
+                      $rs1 = intval($intval);
+
+                      if ($type == 'due') {
+                        $level = $rs1 - $limit;
+                      } else {
+                        $level = $rs1;
+                      }
+                      $coo = $limit;
+                      $rs1 = $rs1 - $limit;
+
+                      if ($level >= 0) { ?>
+
+                        <tr>
+                          <td><?php echo $row['customer_id']; ?></td>
+                          <td><?php echo $row['name']; ?></td>
+                          <td><?php echo $row['sales_id']; ?><br>
+                            <span class="pull-right badge bg-green"><?php echo $row['lorry_no']; ?> </span>
+                          </td>
+                          <td><?php echo $row['date']; ?></td>
+                          <?php
+                          $tot += $row['amount'] - $row['pay_amount'];
+                          ?>
+                          <td><?php echo $row['credit_period'];  ?> Day</td>
+                          <td><?php echo number_format($row['amount'] - $row['pay_amount'], 2);
+                              $b_tot += $row['amount'] - $row['pay_amount'];
+                              if ($row['pay_amount'] > '0') { ?> / <span class="pull-right badge bg-black"><?php echo $row['pay_amount']; ?></span><?php } ?></td>
+                          <td><?php echo $rs1;  ?> Day</td>
+                          <td><?php echo $row['memo']; ?></td>
+                          <td>
+                            <a href="bill2.php?invo=<?php echo base64_encode($row['invoice_number']); ?>" title="Click to View" class="btn btn-primary btn-sm fa fa-eye"></a>
+                          </td>
+                        </tr>
 
                     <?php
-                      // }
+                      }
                     }
                   }
 
