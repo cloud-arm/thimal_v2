@@ -3,7 +3,42 @@ include('../connect.php');
 echo "<title>TESTING</title>";
 
 check_loading($db);
+sync_sp_price($db);
 
+
+
+function sync_sp_price($db)
+{
+    echo "<h1>Special Price List Testing</h1>";
+
+    // Fetch data from the API
+    $api_url = 'https://thimal.cloudarmsoft.com/main/pages/v2/api/sync/sync_sp_price.php';
+    $id = 10;
+    $post_data = array('id' => $id);
+
+    $api_data = api_data($api_url, $post_data);
+
+    // Fetch data from the database
+    $db_data = array();
+    $result = $db->prepare("SELECT customer AS customer_name, id, product_id, product_name, customer_id, n_price, price  FROM special_price  WHERE id > :id ");
+    $result->bindParam(':id', $id);
+    $result->execute();
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $db_data[] = $row;
+    }
+
+    // Display the fetched API data
+    test_array($api_data, "special_price");
+
+    // Compare API data and database data
+    $api_data_normalized = normalize_data($api_data);
+    $db_data_normalized = normalize_data($db_data);
+
+    $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+    test_data($differences);
+}
 
 
 function check_loading($db)

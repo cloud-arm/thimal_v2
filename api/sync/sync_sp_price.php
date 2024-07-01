@@ -6,28 +6,23 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-//echo $r_data[0];
-//$user=$_POST['user'];
 
-$id=$_POST['id'];
+$id = $_POST['id'];
 
-$result = $db->prepare("SELECT * FROM special_price  WHERE id > '$id'");
-$result->bindParam(':userid', $res);
-$result->execute();
-for($i=0; $row = $result->fetch(); $i++){
-    $result_array[] = array (
-        "product_name" => $row['product_name'],
-        "product_id" => $row['product_id'],
-        "customer_name"=>$row['customer'],
-        "customer_id" => $row['customer_id'],
-        "price"=>$row['price'],
-        "n_price"=>$row['n_price'],
-        "id"=>$row['id'],
-    );
+try {
+    // Prepare and execute the SQL query
+    $result = $db->prepare("SELECT customer AS customer_name, id, product_id, product_name, customer_id, n_price, price  FROM special_price  WHERE id > :id ");
+    $result->bindParam(':id', $id);
+    $result->execute();
+
+    // Fetch the results and create an array
+    $result_array = array();
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $result_array[] = $row;
     }
- 
 
-
-
-
-echo (json_encode ( $result_array ));
+    // Encode the array into JSON and output it
+    echo json_encode($result_array);
+} catch (PDOException $e) {
+    echo json_encode(array("message" => "Error: " . $e->getMessage()));
+}
