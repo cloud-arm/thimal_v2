@@ -1,9 +1,9 @@
 <?php
 include('../connect.php');
 
-product($db);
-customer($db);
-damage($db);
+// product($db);
+// customer($db);
+// damage($db);
 employee($db);
 
 
@@ -13,7 +13,8 @@ function employee($db)
 
     // Fetch data from the API
     $api_url = 'https://thimal.cloudarmsoft.com/main/pages/v2/api/get_employee.php';
-    $post_data = array('id' => 123);
+    $id = 8097;
+    $post_data = array('id' => $id);
 
     $api_data = api_data($api_url, $post_data);
 
@@ -23,8 +24,8 @@ function employee($db)
               FROM loading 
               JOIN employee ON loading.driver = employee.id 
               WHERE loading.transaction_id = :id AND loading.driver > 0");
+    $result->bindParam(':id', $id, PDO::PARAM_INT);
     $result->execute();
-    $result->bindParam(':id', 123, PDO::PARAM_INT);
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         $row["type"] = "Driver";
         $db_data[] = $row;
@@ -33,8 +34,8 @@ function employee($db)
               FROM loading 
               JOIN employee ON loading.helper1 = employee.id 
               WHERE loading.transaction_id = :id AND loading.helper1 > 0");
+    $result->bindParam(':id', $id, PDO::PARAM_INT);
     $result->execute();
-    $result->bindParam(':id', 123, PDO::PARAM_INT);
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         $row["type"] = "Helper1";
         $db_data[] = $row;
@@ -43,8 +44,8 @@ function employee($db)
               FROM loading 
               JOIN employee ON loading.helper2 = employee.id 
               WHERE loading.transaction_id = :id AND loading.helper2 > 0");
+    $result->bindParam(':id', $id, PDO::PARAM_INT);
     $result->execute();
-    $result->bindParam(':id', 123, PDO::PARAM_INT);
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         $row["type"] = "Helper2";
         $db_data[] = $row;
@@ -53,8 +54,8 @@ function employee($db)
               FROM loading 
               JOIN employee ON loading.helper3 = employee.id 
               WHERE loading.transaction_id = :id AND loading.helper3 > 0");
+    $result->bindParam(':id', $id, PDO::PARAM_INT);
     $result->execute();
-    $result->bindParam(':id', 123, PDO::PARAM_INT);
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         $row["type"] = "Helper3";
         $db_data[] = $row;
@@ -85,7 +86,7 @@ function damage($db)
 
     // Fetch data from the database
     $db_data = array();
-    $result = $db->prepare("SELECT cylinder_type AS product_name, id, complain_no, customer_name, customer_id, product_id, reason, location, action, cylinder_no  FROM damage ");
+    $result = $db->prepare("SELECT cylinder_type AS product_name, sn, complain_no, customer_name, customer_id, product_id, reason, location, action, cylinder_no  FROM damage ");
     $result->execute();
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         $db_data[] = $row;

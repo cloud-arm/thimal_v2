@@ -37,9 +37,9 @@ foreach ($employee_types as $type => $column) {
         $result_array[] = array(
             "id" => $row['transaction_id'],
             "action" => $row['action'],
-            "type" => $type,
             "emp_id" => $row['emp_id'],
             "name" => $row['name'],
+            "type" => $type,
         );
     }
 }
