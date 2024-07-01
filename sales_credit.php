@@ -203,16 +203,16 @@ include("connect.php");
 
                 if ($filter == "all") {
 
-                  $customer_fill = " ";
+                  echo $customer_fill = " ";
                 } else if ($filter == "group") {
 
-                  $customer_fill = " AND customer.category = '$group' ";
+                  echo $customer_fill = " AND customer.category = '$group' ";
                 } else if ($filter == "type") {
 
-                  $customer_fill = " AND customer.type = '$customer_type' ";
+                  echo $customer_fill = " AND customer.type = '$customer_type' ";
                 } else {
 
-                  $customer_fill = " AND customer.customer_id = '$customer_id' ";
+                  echo $customer_fill = " AND customer.customer_id = '$customer_id' ";
                 }
 
                 if ($lorry == 'all') {
