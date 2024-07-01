@@ -6,6 +6,54 @@ customer($db);
 damage($db);
 employee($db);
 loading($db);
+loading_product($db);
+
+
+function loading_product($db)
+{
+    echo "<h1>Loading Product List Testing</h1>";
+
+    // Fetch data from the API
+    $api_url = 'https://thimal.cloudarmsoft.com/main/pages/v2/api/get_product.php';
+    $id = 8097;
+    $post_data = array('id' => $id);
+
+    $api_data = api_data($api_url, $post_data);
+
+    // Fetch data from the database
+    $db_data = array();
+    $result = $db->prepare("SELECT *, products.price as pprice FROM products JOIN loading_list ON products.product_id = loading_list.product_code WHERE loading_list.loading_id = :id ");
+    $result->bindParam(':id', $id);
+    $result->execute();
+    for ($i = 0; $row = $result->fetch(); $i++) {
+        $db_data[] = array(
+            "name" => $row['gen_name'],
+            "loading_id" => $row['loading_id'],
+            "product_id" => $row['product_id'],
+            "price_id" => $row['price_id'],
+            "price" => $row['pprice'],
+            "price2" => $row['price2'],
+            "sell" => $row['sell_price'],
+            "cost" => $row['o_price'],
+            "qty" => $row['qty'],
+            "qty_sold" => $row['qty_sold'],
+            "action" => $row['action'],
+            "img" => $row['img'],
+        );
+    }
+
+    // Display the fetched API data
+    test_array($api_data, "loading_product");
+
+    // Compare API data and database data
+    $api_data_normalized = normalize_data($api_data);
+    $db_data_normalized = normalize_data($db_data);
+
+    $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+    test_data($differences);
+}
 
 
 function loading($db)
