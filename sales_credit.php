@@ -256,7 +256,7 @@ include("connect.php");
                   $b_tot = 0;
                   $pay_tot = 0;
 
-                  $result1 = $db->prepare("SELECT memo,sales_id,type,action,customer_id,pay_amount,amount,transaction_id,credit_period,invoice_no FROM payment WHERE action='2' and type='credit' and credit_balance>0 and customer_id='$cus' ");
+                  $result1 = $db->prepare("SELECT memo,sales_id,type,action,customer_id,pay_amount,amount,transaction_id,credit_period,invoice_no FROM payment WHERE action='2' AND type='credit' AND customer_id='$cus' ");
                   $result1->bindParam(':userid', $d2);
                   $result1->execute();
                   for ($i = 0; $row = $result1->fetch(); $i++) {
