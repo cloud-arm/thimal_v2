@@ -205,16 +205,16 @@ include("connect.php");
 
                 if ($filter == "all") {
 
-                  echo $customer_fill = " ";
+                  $customer_fill = " ";
                 } else if ($filter == "group") {
 
-                  echo $customer_fill = " AND customer.category = '$group' ";
+                  $customer_fill = " AND customer.category = '$group' ";
                 } else if ($filter == "type") {
 
-                  echo $customer_fill = " AND customer.type = '$customer_type' ";
+                  $customer_fill = " AND customer.type = '$customer_type' ";
                 } else {
 
-                  echo $customer_fill = " AND customer.customer_id = '$customer_id' ";
+                  $customer_fill = " AND customer.customer_id = '$customer_id' ";
                 }
 
                 if ($lorry == 'all') {
@@ -291,7 +291,7 @@ include("connect.php");
                       <tr>
                         <td><?php echo $row['customer_id']; ?></td>
                         <td><?php echo $row['name']; ?></td>
-                        <td><?php echo $row['invoice_no']; ?><br>
+                        <td><?php echo $row['sales_id']; ?><br>
                           <span class="pull-right badge bg-green"><?php echo $row['lorry_no']; ?> </span>
                         </td>
                         <td><?php echo $row['date']; ?></td>
