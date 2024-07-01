@@ -67,7 +67,7 @@ include("connect.php");
             <form method="get" action="">
 
               <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                   <div class="form-group">
                     <label>Type</label>
                     <select class="form-control select2 hidden-search" name="type">
@@ -77,7 +77,7 @@ include("connect.php");
                   </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                   <div class="form-group">
                     <label>Customer</label>
                     <select class="form-control select2 hidden-search" name="filter" class="form-control" onchange="view_payment_date(this.value);">
@@ -89,7 +89,7 @@ include("connect.php");
                   </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                   <div class="form-group">
                     <label>Lorry </label>
                     <select class="form-control select2" name="lorry" style="width: 100%;">
@@ -109,7 +109,7 @@ include("connect.php");
                   </div>
                 </div>
 
-                <div class="col-md-4" id="group_view" style="display:none;">
+                <div class="col-md-3" id="group_view" style="display:none;">
                   <div class="form-group">
                     <label>Customer Group </label>
                     <select class="form-control select2" name="group" style="width: 100%;">
@@ -128,7 +128,7 @@ include("connect.php");
                   </div>
                 </div>
 
-                <div class="col-md-4" id="type_view" style="display:none;">
+                <div class="col-md-3" id="type_view" style="display:none;">
                   <div class="form-group">
                     <label>Customer Type</label>
                     <select class="form-control select2 hidden-search" name="customer_type" style="width: 100%;">
@@ -139,7 +139,7 @@ include("connect.php");
                   </div>
                 </div>
 
-                <div class="col-md-4" id="cus_view" style="display:none;">
+                <div class="col-md-6" id="cus_view" style="display:none;">
                   <div class="form-group">
                     <label>Customer</label>
                     <select class="form-control select2" name="cus" style="width: 100%;">
@@ -157,7 +157,7 @@ include("connect.php");
                   </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                   <div class="form-group">
                     <button class="btn btn-info" style="width: 123px; margin-top: 23px;" type="submit">
                       <i class="fa fa-search"></i> Search
