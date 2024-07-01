@@ -213,7 +213,7 @@ include("connect.php");
                 $sales = array();
 
                 $sql1 = "SELECT customer_id FROM customer $customer_fill ORDER BY category DESC";
-                $sql1 = "SELECT customer_id FROM payment JOIN customer ON customer.customer_id = payment.customer_id WHERE payment.action='2' AND payment.type='credit' AND payment.credit_balance > 0 $customer_fill ORDER BY customer.customer_id";
+                $sql1 = "SELECT payment.customer_id AS cus_id FROM payment JOIN customer ON customer.customer_id = payment.customer_id WHERE payment.action='2' AND payment.type='credit' AND payment.credit_balance > 0 $customer_fill ORDER BY customer.customer_id";
                 $sql2 = "SELECT *,sales.date AS sales_date FROM payment JOIN sales ON payment.sales_id = sales.transaction_id WHERE payment.action='2' AND sales.action='1' AND payment.type='credit' AND payment.credit_balance > 0  ORDER BY payment.customer_id" . $lorry_fill;
 
                 $result = $db->prepare($sql1);
@@ -221,7 +221,7 @@ include("connect.php");
                 $result->execute();
                 for ($i = 0; $row = $result->fetch(); $i++) {
 
-                  $customer[] = $row['customer_id'];
+                  $customer[] = $row['cus_id'];
                 }
 
                 $result = $db->prepare($sql2);
