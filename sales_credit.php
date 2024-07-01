@@ -157,7 +157,7 @@ include("connect.php");
                   </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-4">
                   <div class="form-group">
                     <button class="btn btn-info" style="width: 123px; margin-top: 23px;" type="submit">
                       <i class="fa fa-search"></i> Search
