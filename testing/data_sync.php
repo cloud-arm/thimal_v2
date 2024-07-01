@@ -11,7 +11,7 @@ function check_loading($db)
     echo "<h1>Loading Testing</h1>";
 
     // Fetch data from the API
-    $api_url = 'http://localhost/Thimal/main/pages/get_v2/api/sync/check_loading.php';
+    $api_url = 'https://thimal.cloudarmsoft.com/main/pages/v2/api/sync/check_loading.php';
     $id = 25;
     $post_data = array('id' => $id);
 
