@@ -20,7 +20,7 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 }
 
 // Display the fetched API data
-echo "<h1>Product List for API</h1><ul>";
+echo "<h6>Product List for API</h6><ul>";
 if (is_array($api_data)) {
     foreach ($api_data as $product) {
         echo "<li>[{$product['id']}] {$product['name']} - Rs. {$product['price']} (Quantity: {$product['qty']})</li>";
@@ -33,7 +33,7 @@ if (is_array($api_data)) {
 echo "<br><br><br>";
 
 // Display the fetched database data
-echo "<h1>Product List for Datatable</h1><ul>";
+echo "<h6>Product List for Datatable</h6><ul>";
 foreach ($db_data as $product) {
     echo "<li>[{$product['id']}] {$product['name']} - Rs. {$product['price']} (Quantity: {$product['qty']})</li>";
 }
@@ -47,6 +47,8 @@ $api_data_normalized = array_map(function ($product) {
 $db_data_normalized = array_map(function ($product) {
     return "{$product['id']}_{$product['name']}_{$product['price']}_{$product['qty']}";
 }, $db_data);
+
+echo "<br><br><br>";
 
 if (count(array_diff($api_data_normalized, $db_data_normalized)) === 0 && count(array_diff($db_data_normalized, $api_data_normalized)) === 0) {
     echo "Testing successful..!";
