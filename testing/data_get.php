@@ -3,6 +3,7 @@ include('../connect.php');
 
 product($db);
 customer($db);
+damage_reason($db);
 damage($db);
 employee($db);
 loading($db);
@@ -146,6 +147,37 @@ function employee($db)
 
     // Display the fetched API data
     test_array($api_data, "employee");
+
+    // Compare API data and database data
+    $api_data_normalized = normalize_data($api_data);
+    $db_data_normalized = normalize_data($db_data);
+
+    $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+    test_data($differences);
+}
+
+
+function damage_reason($db)
+{
+    echo "<h1>Damage Reason List Testing</h1>";
+
+    // Fetch data from the API
+    $api_url = 'https://thimal.cloudarmsoft.com/main/pages/v2/api/get_damage_reason.php';
+
+    $api_data = api_data($api_url);
+
+    // Fetch data from the database
+    $db_data = array();
+    $result = $db->prepare("SELECT * FROM damage_reason ");
+    $result->execute();
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $db_data[] = $row;
+    }
+
+    // Display the fetched API data
+    test_array($api_data, "damage_reason");
 
     // Compare API data and database data
     $api_data_normalized = normalize_data($api_data);
