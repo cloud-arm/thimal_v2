@@ -208,19 +208,19 @@ include("connect.php");
                   $customer_fill = " ";
                 } else if ($filter == "group") {
 
-                  $customer_fill = " AND customer.category = '$group' ";
+                  $customer_fill = " WHERE customer.category = '$group' ";
                 } else if ($filter == "type") {
 
-                  $customer_fill = " AND customer.type = '$customer_type' ";
+                  $customer_fill = " WHERE customer.type = '$customer_type' ";
                 } else {
 
-                  $customer_fill = " AND customer.customer_id = '$customer_id' ";
+                  $customer_fill = " WHERE customer.customer_id = '$customer_id' ";
                 }
 
                 if ($lorry == 'all') {
                   $lorry_fill = " ";
                 } else {
-                  $lorry_fill = " AND sales.lorry_no = '$lorry' ";
+                  $lorry_fill = " WHERE sales.lorry_no = '$lorry' ";
                 }
 
                 $customer = array();
