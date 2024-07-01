@@ -36,6 +36,8 @@ include("connect.php");
           <?php
           if (isset($_GET['type'])) {
 
+            $filter = $_GET['filter']; // customer filter
+
             if ($filter == 'group') {
               $group = $_GET['group']; //customer category id
             }
@@ -78,7 +80,7 @@ include("connect.php");
                 <div class="col-md-4">
                   <div class="form-group">
                     <label>Customer</label>
-                    <select class="form-control select2 hidden-search" name="filter" class="form-control" id="p_type" onchange="view_payment_date(this.value);">
+                    <select class="form-control select2 hidden-search" name="filter" class="form-control" onchange="view_payment_date(this.value);">
                       <option value="all">All Customer</option>
                       <option value="group">Customer Group</option>
                       <option value="type">Customer Type</option>
