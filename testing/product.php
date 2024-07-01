@@ -20,7 +20,7 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 }
 
 // Display the fetched API data
-echo "<h6>Product List for API</h6><ul>";
+echo "<h4>Product List for API</h4><ul>";
 if (is_array($api_data)) {
     foreach ($api_data as $product) {
         echo "<li>[{$product['id']}] {$product['name']} - Rs. {$product['price']} (Quantity: {$product['qty']})</li>";
@@ -33,7 +33,7 @@ if (is_array($api_data)) {
 echo "<br><br><br>";
 
 // Display the fetched database data
-echo "<h6>Product List for Datatable</h6><ul>";
+echo "<h4>Product List for Datatable</h4><ul>";
 foreach ($db_data as $product) {
     echo "<li>[{$product['id']}] {$product['name']} - Rs. {$product['price']} (Quantity: {$product['qty']})</li>";
 }
