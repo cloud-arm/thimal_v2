@@ -1,5 +1,6 @@
 <?php
 include('../../connect.php');
+include('../../config.php');
 include('log.php');
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -35,43 +36,44 @@ foreach ($damage as $list) {
     $action = "register";
 
 
-    if ($customer == 0) {
+    try {
 
-        $customer_name = 'Narangoda Group';
-    } else {
-        $result = $db->prepare("SELECT * FROM customer WHERE customer_id = :id ");
-        $result->bindParam(':id', $customer);
+        if ($customer == 0) {
+
+            $customer_name = 'Narangoda Group';
+        } else {
+            $result = $db->prepare("SELECT * FROM customer WHERE customer_id = :id ");
+            $result->bindParam(':id', $customer);
+            $result->execute();
+            for ($i = 0; $row = $result->fetch(); $i++) {
+                $customer_name = $row['customer_name'];
+            }
+        }
+
+        $result = $db->prepare("SELECT * FROM products WHERE product_id = :id ");
+        $result->bindParam(':id', $product);
         $result->execute();
         for ($i = 0; $row = $result->fetch(); $i++) {
-            $customer_name = $row['customer_name'];
+            $product_name = $row['gen_name'];
         }
-    }
 
-    $result = $db->prepare("SELECT * FROM products WHERE product_id = :id ");
-    $result->bindParam(':id', $product);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $product_name = $row['gen_name'];
-    }
+        $result = $db->prepare("SELECT * FROM loading WHERE transaction_id =:id ");
+        $result->bindParam(':id', $load_id);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $lorry = $row['lorry_id'];
+            $lorry_no = $row['lorry_no'];
+            $user_id = $row['driver'];
+            $user_name = $row['rep'];
+        }
 
-    $result = $db->prepare("SELECT * FROM loading WHERE transaction_id =:id ");
-    $result->bindParam(':id', $load_id);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $lorry = $row['lorry_id'];
-        $lorry_no = $row['lorry_no'];
-        $user_id = $row['driver'];
-        $user_name = $row['rep'];
-    }
+        $result = $db->prepare("SELECT * FROM damage_reason WHERE id = :id ");
+        $result->bindParam(':id', $reason);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $reason_name = $row['name'];
+        }
 
-    $result = $db->prepare("SELECT * FROM damage_reason WHERE id = :id ");
-    $result->bindParam(':id', $reason);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $reason_name = $row['name'];
-    }
-
-    try {
 
         //checking duplicate
         $con = 0;
@@ -143,6 +145,28 @@ foreach ($damage as $list) {
         // Create log
         $content = "cloud_id: 0, app_id: " . $app_id . ", invoice: " . $invoice . ", status: failed, message: " . $e->getMessage() . ", Date: " . date('Y-m-d') . ", Time: " . date('H:s:i');
         log_init('damage', $content);
+
+
+        // Get the database name
+        $stmt = $db->query("SELECT DATABASE()");
+        $dbName = $stmt->fetchColumn();
+
+        // Attempt to extract table name from error message
+        $errorMessage = $e->getMessage();
+        $tableName = null;
+
+        // Example of extracting the table name using a regular expression
+        if (preg_match('/(table|relation) "(\w+)"/i', $errorMessage, $matches)) {
+            $tableName = $matches[2];
+        }
+
+        $fileName = "set_damage.php";
+
+        // create message
+        $message = "Please check error log..!    ( File: " . $e->getFile() . " On line: " . $e->getLine() . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $tableName . " )  ( Database Name: "  . $dbName . " )";
+
+        // create discord alert
+        discord($message);
     }
 }
 
