@@ -10,7 +10,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 $id = $_POST['id'] ?? null;
 
 if ($id === null) {
-    echo json_encode(array("message" => "No transaction ID provided."));
+    echo json_encode(array("message" => "Error: Missing parameters."));
     exit();
 }
 

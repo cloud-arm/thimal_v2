@@ -7,7 +7,13 @@ header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 
-$id = $_POST['id'];
+// Retrieve the transaction ID from the POST data
+$id = $_POST['id'] ?? null;
+
+if ($id === null) {
+    echo json_encode(array("message" => "Error: Missing parameters."));
+    exit();
+}
 
 try {
     // Prepare and execute the SQL query
