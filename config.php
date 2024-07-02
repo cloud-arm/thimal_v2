@@ -50,6 +50,7 @@ function check_sales($db, $id)
 include("pdf/pdf.php");
 include("class/whatsapp.php");
 include("class/sms.php");
+include("class/discord.php");
 include("class/email.php");
 include("class/table.php");
 include("class/form.php");
