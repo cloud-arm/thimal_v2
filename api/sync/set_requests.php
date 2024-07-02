@@ -1,6 +1,5 @@
 <?php
 include('../../connect.php');
-include('../../config_sync.php');
 include('../../log/log.php');
 include("../../config.php");
 date_default_timezone_set("Asia/Colombo");
@@ -54,11 +53,6 @@ foreach ($requests as $list) {
 
         if ($con == 0) {
 
-            // insert query
-            // $sql = "INSERT INTO requests_data (type,customer_id,customer_name,note,date,time,user_id,app_id) VALUES (?,?,?,?,?,?,?,?)";
-            // $ql = $db->prepare($sql);
-            // $ql->execute(array($type, $cus, $cus_name, $note, $date, $time, $user_id, $app_id));
-
             $insertData = array(
                 "data" => array(
                     "type" => $type,
@@ -76,7 +70,7 @@ foreach ($requests as $list) {
                 ),
             );
 
-            $status = insert($db, "requests_data", $insertData, '../../', 'set_requests.php');
+            $status = insert("requests_data", $insertData, '../../', 'set_requests.php');
         } else {
             $status = array(
                 "status" => "success",
@@ -96,25 +90,21 @@ foreach ($requests as $list) {
         }
 
         // create success respond 
-        $res = array(
+        $result_array[] = array(
             "cloud_id" => $id,
             "app_id" => $ap_id,
             "status" => $status['status'],
             "message" => $status['message'],
         );
-
-        array_push($result_array, $res);
     } catch (PDOException $e) {
 
         // create error respond 
-        $res = array(
+        $result_array[] = array(
             "cloud_id" => 0,
             "app_id" => 0,
             "status" => "failed",
             "message" => $e->getMessage(),
         );
-
-        array_push($result_array, $res);
 
         // Create log
         $content = "cloud_id: 0, app_id: " . $app_id . ", status: failed, message: " . $e->getMessage() . ", Date: " . date('Y-m-d') . ", Time: " . date('H:s:i');
