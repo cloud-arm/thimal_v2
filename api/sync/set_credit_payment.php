@@ -1,6 +1,5 @@
 <?php
 include('../../connect.php');
-include('../../config_sync.php');
 include('../../log/log.php');
 include("../../config.php");
 date_default_timezone_set("Asia/Colombo");
@@ -35,46 +34,47 @@ foreach ($credit_payment as $list) {
     $sales_id = 0; //
     $tr_id = 0; //
 
-    // get customer details
-    $result = $db->prepare("SELECT * FROM customer WHERE customer_id=:id  ");
-    $result->bindParam(':id', $cus);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $cus_name = $row['customer_name'];
-    }
-
-    // get collection details
-    $result = $db->prepare("SELECT * FROM collection WHERE invoice_no=:id  ");
-    $result->bindParam(':id', $pay_invoice);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $collection = $row['id'];
-        $load = $row['loading_id'];
-        $date = $row['date'];
-    }
-
-    // get credit details
-    $result = $db->prepare("SELECT * FROM payment WHERE invoice_no=:id AND pay_type = 'credit' ");
-    $result->bindParam(':id', $invoice);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $tr_id = $row['transaction_id'];
-        $sales_id = $row['sales_id'];
-    }
-
-    // get bulk details
-    $pay_id = 0;
-    $pay_type = '';
-    $result = $db->prepare("SELECT * FROM payment WHERE invoice_no=:id  ");
-    $result->bindParam(':id', $pay_invoice);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $pay_id = $row['transaction_id'];
-        $pay_type = $row['pay_type'];
-    }
 
     //------------------------------------------------------------------//
     try {
+
+        // get customer details
+        $result = $db->prepare("SELECT * FROM customer WHERE customer_id=:id  ");
+        $result->bindParam(':id', $cus);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $cus_name = $row['customer_name'];
+        }
+
+        // get collection details
+        $result = $db->prepare("SELECT * FROM collection WHERE invoice_no=:id  ");
+        $result->bindParam(':id', $pay_invoice);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $collection = $row['id'];
+            $load = $row['loading_id'];
+            $date = $row['date'];
+        }
+
+        // get credit details
+        $result = $db->prepare("SELECT * FROM payment WHERE invoice_no=:id AND pay_type = 'credit' ");
+        $result->bindParam(':id', $invoice);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $tr_id = $row['transaction_id'];
+            $sales_id = $row['sales_id'];
+        }
+
+        // get bulk details
+        $pay_id = 0;
+        $pay_type = '';
+        $result = $db->prepare("SELECT * FROM payment WHERE invoice_no=:id  ");
+        $result->bindParam(':id', $pay_invoice);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $pay_id = $row['transaction_id'];
+            $pay_type = $row['pay_type'];
+        }
 
         //checking duplicate
         $con = 0;
@@ -86,11 +86,6 @@ foreach ($credit_payment as $list) {
         }
 
         if ($con == 0) {
-
-            // insert query
-            // $sql = "INSERT INTO credit_payment (invoice_no,pay_amount,credit_amount,type,date,cus_id,cus,action,loading_id,pay_id,collection_id,sales_id,tr_id,app_id,pay_invoice) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-            // $ql = $db->prepare($sql);
-            // $ql->execute(array($invoice, $pay_amount, $credit_amount, $pay_type,  $date,  $cus, $cus_name, 2, $load, $pay_id, $collection, $sales_id, $tr_id, $app_id, $pay_invoice));
 
             $insertData = array(
                 "data" => array(
@@ -116,7 +111,7 @@ foreach ($credit_payment as $list) {
                 ),
             );
 
-            $status = insert_data($db, "credit_payment", $insertData, '../../', 'set_credit_payment.php');
+            $status = insert("credit_payment", $insertData, '../../', 'set_credit_payment.php');
         } else {
             $status = array(
                 "status" => "success",
@@ -138,19 +133,17 @@ foreach ($credit_payment as $list) {
         }
 
         // create success respond 
-        $res = array(
+        $result_array[] = array(
             "cloud_id" => $id,
             "app_id" => $ap_id,
             "invoice_no" => $invo,
             "status" => $status['status'],
             "message" => $status['message'],
         );
-
-        array_push($result_array, $res);
     } catch (PDOException $e) {
 
         // create error respond 
-        $res = array(
+        $result_array[] = array(
             "cloud_id" => 0,
             "app_id" => 0,
             "invoice_no" => "",
@@ -158,11 +151,31 @@ foreach ($credit_payment as $list) {
             "message" => $e->getMessage(),
         );
 
-        array_push($result_array, $res);
-
         // Create log
         $content = "cloud_id: 0, app_id: " . $app_id . ", invoice: " . $invoice . ", status: failed, message: " . $e->getMessage() . ", Date: " . date('Y-m-d') . ", Time: " . date('H:s:i');
         log_init('credit_payment', $content, 'txt', '../../');
+
+
+        // Get the database name
+        $stmt = $db->query("SELECT DATABASE()");
+        $dbName = $stmt->fetchColumn();
+
+        // Attempt to extract table name from error message
+        $errorMessage = $e->getMessage();
+        $tableName = null;
+
+        // Example of extracting the table name using a regular expression
+        if (preg_match('/(table|relation) "(\w+)"/i', $errorMessage, $matches)) {
+            $tableName = $matches[2];
+        }
+
+        $fileName = "set_sales.php";
+
+        // create message
+        $message = "Please check error log..!    ( File: " . $e->getFile() . " On line: " . $e->getLine() . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $tableName . " )  ( Database Name: "  . $dbName . " )";
+
+        // create discord alert
+        discord($message);
     }
 }
 
