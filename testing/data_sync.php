@@ -5,7 +5,51 @@ echo "<title>TESTING</title>";
 check_loading($db);
 sync_sp_price($db);
 sync_customer($db);
+sync_credit($db);
 
+
+
+function sync_credit($db)
+{
+    echo "<h1>Credit Testing</h1>";
+
+    // Fetch data from the API
+    $api_url = 'http://localhost/Thimal/main/pages/get_v2/api/sync/sync_credit.php';
+    $id = 1010;
+    $post_data = array('id' => $id);
+
+    $api_data = api_data($api_url, $post_data);
+
+    // Fetch data from the database
+    $db_data = array();
+    $result = $db->prepare("SELECT * FROM payment JOIN customer ON payment.customer_id=customer.customer_id WHERE payment.type='credit' AND payment.pay_amount < payment.amount AND payment.transaction_id > :id AND payment.action > 0 AND payment.dll = 0 ");
+    $result->bindParam(':id', $id);
+    $result->execute();
+    for ($i = 0; $row = $result->fetch(); $i++) {
+        $db_data[] = array(
+            "name" => $row['customer_name'],
+            "cus_id" => $row['customer_id'],
+            "amount" => $row['amount'],
+            "balance" => $row['amount'] - $row['pay_amount'],
+            "type" => $row['type'],
+            "invoice_no" => $row['invoice_no'],
+            "date" => $row['date'],
+            "id" => $row['transaction_id'],
+        );
+    }
+
+    // Display the fetched API data
+    test_array($api_data, "sync_credit");
+
+    // Compare API data and database data
+    $api_data_normalized = normalize_data($api_data);
+    $db_data_normalized = normalize_data($db_data);
+
+    $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+    test_data($differences);
+}
 
 
 function sync_customer($db)
