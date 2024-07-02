@@ -4,7 +4,76 @@ echo "<title>TESTING</title>";
 
 check_loading($db);
 sync_sp_price($db);
+sync_customer($db);
 
+
+
+function sync_customer($db)
+{
+    echo "<h1>Find Customer Testing</h1>";
+
+    // Fetch data from the API
+    $api_url = 'http://localhost/Thimal/main/pages/get_v2/api/sync/sync_customer.php';
+    $id = 10;
+    $type = " ";
+    $post_data = array('id' => $id, 'type' => $type);
+
+    $api_data = api_data($api_url, $post_data);
+
+    // Fetch data from the database
+    $db_data = array();
+    $result = $db->prepare("SELECT customer_id AS id, customer_name AS name,  price_12 AS price12, price_5 AS price5, price_37 AS price37, price_2 AS price2, address, contact, area, vat_no, root_id, root FROM customer WHERE customer_id > :id ");
+    $result->bindParam(':id', $id);
+    $result->execute();
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $db_data[] = $row;
+    }
+
+    // Display the fetched API data
+    test_array($api_data, "sync_customer");
+
+    // Compare API data and database data
+    $api_data_normalized = normalize_data($api_data);
+    $db_data_normalized = normalize_data($db_data);
+
+    $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+    test_data($differences);
+
+    // reset arrays
+    unset($api_data);
+    unset($db_data);
+
+    // Fetch data from the API
+    $api_url = 'http://localhost/Thimal/main/pages/get_v2/api/sync/sync_customer.php';
+    $id = 10;
+    $type = "find";
+    $post_data = array('id' => $id, 'type' => $type);
+
+    $api_data = api_data($api_url, $post_data);
+
+    // Fetch data from the database
+    $db_data = array();
+    $result = $db->prepare("SELECT customer_id AS id, customer_name AS name,  price_12 AS price12, price_5 AS price5, price_37 AS price37, price_2 AS price2, address, contact, area, vat_no, root_id, root FROM customer WHERE customer_id = :id ");
+    $result->bindParam(':id', $id);
+    $result->execute();
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $db_data[] = $row;
+    }
+
+    // Display the fetched API data
+    test_array($api_data, "sync_customer_find");
+
+    // Compare API data and database data
+    $api_data_normalized = normalize_data($api_data);
+    $db_data_normalized = normalize_data($db_data);
+
+    $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+    test_data($differences);
+}
 
 
 function sync_sp_price($db)
