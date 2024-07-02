@@ -1,5 +1,6 @@
 <?php
 include('../../connect.php');
+include('../../config.php');
 include('log.php');
 date_default_timezone_set("Asia/Colombo");
 header("Access-Control-Allow-Origin: *");
@@ -38,37 +39,38 @@ foreach ($expenses as $list) {
     $sub_name = '';
     $driver_name = '';
 
-    $type = 2;
-    $re = $db->prepare("SELECT * FROM expenses_types WHERE sn=:id ");
-    $re->bindParam(':id', $type);
-    $re->execute();
-    for ($i = 0; $r = $re->fetch(); $i++) {
-        $type_name = $r['type_name'];
-    }
-
-    $re = $db->prepare("SELECT * FROM expenses_sub_type WHERE id=:id ");
-    $re->bindParam(':id', $sub_id);
-    $re->execute();
-    for ($i = 0; $r = $re->fetch(); $i++) {
-        $sub_name = $r['name'];
-    }
-
-    $result = $db->prepare("SELECT * FROM employee WHERE id=:id  ");
-    $result->bindParam(':id', $driver);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $driver_name = $row['name'];
-    }
-
-    $result = $db->prepare("SELECT * FROM loading WHERE transaction_id=:id ");
-    $result->bindParam(':id', $load_id);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $lorry = $row['lorry_id'];
-        $lorry_no = $row['lorry_no'];
-    }
 
     try {
+
+        $type = 2;
+        $re = $db->prepare("SELECT * FROM expenses_types WHERE sn=:id ");
+        $re->bindParam(':id', $type);
+        $re->execute();
+        for ($i = 0; $r = $re->fetch(); $i++) {
+            $type_name = $r['type_name'];
+        }
+
+        $re = $db->prepare("SELECT * FROM expenses_sub_type WHERE id=:id ");
+        $re->bindParam(':id', $sub_id);
+        $re->execute();
+        for ($i = 0; $r = $re->fetch(); $i++) {
+            $sub_name = $r['name'];
+        }
+
+        $result = $db->prepare("SELECT * FROM employee WHERE id=:id  ");
+        $result->bindParam(':id', $driver);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $driver_name = $row['name'];
+        }
+
+        $result = $db->prepare("SELECT * FROM loading WHERE transaction_id=:id ");
+        $result->bindParam(':id', $load_id);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $lorry = $row['lorry_id'];
+            $lorry_no = $row['lorry_no'];
+        }
 
         //checking duplicate
         $con = 0;
@@ -101,7 +103,7 @@ foreach ($expenses as $list) {
             $q->execute(array($date, $type, $type_name, $invoice, $amount, $amount, $driver, $driver, $load_id, 'lorry_collection', $sub_id, $sub_name, $lorry, $lorry_no, $cr_id, 'payment', $date, $app_id));
 
             if ($sub_id == 4) {
-                
+
                 $now = date('Y-m-d');
                 $emp_id = $list['employee_id'];
 
@@ -160,6 +162,28 @@ foreach ($expenses as $list) {
         // Create log
         $content = "cloud_id: 0, app_id: " . $app_id . ", invoice: " . $invoice . ", status: failed, message: " . $e->getMessage() . ", Date: " . date('Y-m-d') . ", Time: " . date('H:s:i');
         log_init('expenses', $content);
+
+
+        // Get the database name
+        $stmt = $db->query("SELECT DATABASE()");
+        $dbName = $stmt->fetchColumn();
+
+        // Attempt to extract table name from error message
+        $errorMessage = $e->getMessage();
+        $tableName = null;
+
+        // Example of extracting the table name using a regular expression
+        if (preg_match('/(table|relation) "(\w+)"/i', $errorMessage, $matches)) {
+            $tableName = $matches[2];
+        }
+
+        $fileName = "set_expenses.php";
+
+        // create message
+        $message = "Please check error log..!    ( File: " . $e->getFile() . " On line: " . $e->getLine() . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $tableName . " )  ( Database Name: "  . $dbName . " )";
+
+        // create discord alert
+        discord($message);
     }
 }
 
