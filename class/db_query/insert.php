@@ -15,7 +15,7 @@ function insert($table, $data, $path = "", $file = "")
 
         $res = array(
             "status" => "success",
-            "message" => "",
+            "message" => "Data Insert Successful ..!",
         );
         return $res;
     } catch (PDOException $e) {
@@ -30,10 +30,19 @@ function insert($table, $data, $path = "", $file = "")
         );
         // log_init('error', $json, 'json', $path);
 
-        // create whatsapp alert 
+        // Get the database name
+        $stmt = $db->query("SELECT DATABASE()");
+        $dbName = $stmt->fetchColumn();
+
+        // create message
+        $message = "Please check error log..!    ( File: " . $file . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $table . " )  ( Database Name: "  . $dbName . " )";
+
+        // create discord alert
+        discord($message);
+
+        // create whatsapp alert
         // $contact = '94762020312';
-        $contact = '94772955659';
-        $message = "Please check error log..!    ( File: " . $file . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $table . " )";
+        // $contact = '94772955659';
         // whatsApp($contact, $message);
 
         // Create txt log
