@@ -243,7 +243,7 @@ foreach ($sales_list as $list) {
             $fileName = "set_sales_list.php";
 
             // create message
-            $message = "Please check error log..!    ( File: " . $fileName . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $tableName . " )  ( Database Name: "  . $dbName . " )";
+            $message = "Please check error log..!    ( File: " . $e->getFile() . " On line: " . $e->getLine() . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $tableName . " )  ( Database Name: "  . $dbName . " )";
 
             // create discord alert
             discord($message);
