@@ -1,5 +1,6 @@
 <?php
 include('../../connect.php');
+include("../../config.php");
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
@@ -36,26 +37,26 @@ foreach ($unloading as $list) {
     try {
 
         // unloading
-        $sql = "UPDATE loading SET  r5000 = ?, r1000 = ?, r500 = ?, r100 = ?, r50 = ?, r20 = ?, r10 = ?, coins = ?, cash_total = ? WHERE transaction_id = ? AND driver = ?";
-        $q = $db->prepare($sql);
-        $q->execute(array( $r5000, $r1000, $r500, $r100, $r50, $r20, $r10, $coins, $cash_amount, $load, $driver));
-
-        // create success respond 
-        $res = array(
-            "status" => "success",
-            "message" => "",
+        $updateData = array(
+            "r5000" => $r5000,
+            "r1000" => $r1000,
+            "r500" => $r500,
+            "r100" => $r100,
+            "r50" => $r50,
+            "r20" => $r20,
+            "r10" => $r10,
+            "coins" => $coins,
+            "cash_total" => $cash_amount,
         );
 
-        array_push($result_array, $res);
+        $result_array[] =  update("loading", $updateData, "transaction_id = " . $load . " AND driver = " . $driver, "../../");
     } catch (PDOException $e) {
 
         // create error respond 
-        $res = array(
+        $result_array[] = array(
             "status" => "failed",
             "message" => $e->getMessage(),
         );
-
-        array_push($result_array, $res);
     }
 }
 

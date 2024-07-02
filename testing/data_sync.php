@@ -1,12 +1,78 @@
 <?php
 include('../connect.php');
+include_once('data_send.php');
 echo "<title>TESTING</title>";
 
-check_loading($db);
-sync_sp_price($db);
-sync_customer($db);
-sync_credit($db);
+// check_loading($db);
+// sync_sp_price($db);
+// sync_customer($db);
+// sync_credit($db);
+set_unloading($db);
 
+
+function set_unloading($db)
+{
+
+    $api_url = 'http://localhost/Thimal/main/pages/get_v2/api/sync/set_unloading.php';
+
+    $api_data[] = array(
+        "id" => 1,
+        "loading_id" => "8097",
+        "driver_id" => "36",
+        "r5000" => "5",
+        "r1000" => "10",
+        "r500" => "15",
+        "r100" => "20",
+        "r50" => "25",
+        "r20" => "30",
+        "r10" => "35",
+        "coins" => "100",
+        "cash_amount" => "46800.00"
+        // Add more data arrays as needed
+    );
+
+    $response = send_data($api_url, $api_data);
+
+    foreach ($response as $res) {
+        echo "Status: {$res["status"]} - Message: {$res["message"]}";
+
+        if ($res["status"] == "success") {
+
+            $id = 8097;
+
+            // Fetch data from the database
+            $db_data = array();
+            $result = $db->prepare("SELECT * FROM loading WHERE transaction_id = :id  ");
+            $result->bindParam(':id', $id);
+            $result->execute();
+            for ($i = 0; $row = $result->fetch(); $i++) {
+                $db_data[] = array(
+                    "id" => 1,
+                    "loading_id" => $row['transaction_id'],
+                    "driver_id" => $row['driver'],
+                    "r5000" => $row['r5000'],
+                    "r1000" => $row['r1000'],
+                    "r500" => $row['r500'],
+                    "r100" => $row['r100'],
+                    "r50" => $row['r50'],
+                    "r20" => $row['r20'],
+                    "r10" => $row['r10'],
+                    "coins" => $row['coins'],
+                    "cash_amount" => $row['cash_total']
+                );
+            }
+
+            // Compare API data and database data
+            $api_data_normalized = normalize_data($api_data);
+            $db_data_normalized = normalize_data($db_data);
+
+            $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+            test_data($differences);
+        }
+    }
+}
 
 
 function sync_credit($db)
