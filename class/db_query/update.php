@@ -16,8 +16,12 @@ function update($table, $data, $where, $path = "")
     try {
         $stmt = $db->prepare($sql);
         $stmt->execute();
-        return "Data updated successfully!";
+
+        // create success respond 
+        return array("status" => "success", "message" => "Data updated successfully..!");
     } catch (PDOException $e) {
-        return "Update failed: " . $e->getMessage();
+
+        // create error respond 
+        return array("status" => "failed", "message" => $e->getMessage());
     }
 }

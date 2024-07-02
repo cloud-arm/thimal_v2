@@ -1,8 +1,8 @@
 <?php
 
-function select($table, $columns = "*", $where = "")
+function select($table, $columns = "*", $where = "", $path = "")
 {
-    include('connect.php');
+    include($path . 'connect.php');
 
     $sql = "SELECT $columns FROM $table";
 
@@ -13,22 +13,27 @@ function select($table, $columns = "*", $where = "")
     try {
         $result = $db->prepare($sql);
         $result->execute();
+
         return $result;
     } catch (PDOException $e) {
-        echo "Selection failed: " . $e->getMessage();
-        return false;
+
+        // create error respond 
+        return array("status" => "failed", "message" => $e->getMessage());
     }
 }
 
-function select_query($sql){
-    include('connect.php');
+function select_query($sql, $path = "")
+{
+    include($path . 'connect.php');
 
     try {
         $result = $db->prepare($sql);
         $result->execute();
+
         return $result;
     } catch (PDOException $e) {
-        echo "Selection failed: " . $e->getMessage();
-        return false;
+
+        // create error respond 
+        return array("status" => "failed", "message" => $e->getMessage());
     }
 }
