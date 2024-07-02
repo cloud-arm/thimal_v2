@@ -3,11 +3,54 @@ include('../connect.php');
 include_once('data_send.php');
 echo "<title>TESTING</title>";
 
-// check_loading($db);
-// sync_sp_price($db);
-// sync_customer($db);
-// sync_credit($db);
+check_loading($db);
+sync_sp_price($db);
+sync_customer($db);
+sync_credit($db);
 set_unloading($db);
+set_gps($db);
+
+
+function set_gps($db)
+{
+
+    $api_url = 'http://localhost/Thimal/main/pages/get_v2/api/sync/set_gps.php';
+
+    $post_data = array(
+        'user_id' => 36,
+        'lat' => 7.8731,
+        'lng' => 80.7718,
+    );
+
+    $api_data = api_data($api_url, $post_data);
+
+    $id = 36;
+
+    // Fetch data from the database
+    $db_data = array();
+    $result = $db->prepare("SELECT * FROM user WHERE EmployeeId = :id  ");
+    $result->bindParam(':id', $id);
+    $result->execute();
+    for ($i = 0; $row = $result->fetch(); $i++) {
+        $db_data[] = array(
+            "user_id" => $row['EmployeeId'],
+            "lat" => $row['lat'],
+            "lng" => $row['lng']
+        );
+    }
+
+    // Display the fetched API data
+    test_array($api_data, "set_gps");
+
+    // Compare API data and database data
+    $api_data_normalized = normalize_data($api_data);
+    $db_data_normalized = normalize_data($db_data);
+
+    $differences = array_diff($api_data_normalized, $db_data_normalized);
+
+
+    test_data($differences);
+}
 
 
 function set_unloading($db)
@@ -298,7 +341,7 @@ function test_array($api_data, $name)
             echo "Success to fetch {$name} data from API.";
         }
     } else {
-        echo "Failed to fetch {$name} data from API.";
+        echo "Failed to fetch {$name} data from API. not an array";
     }
 }
 
