@@ -233,6 +233,28 @@ foreach ($payment as $list) {
         // Create log
         $content = "cloud_id: 0, app_id: " . $app_id . ", invoice: " . $invoice . ", status: failed, message: " . $e->getMessage() . ", Date: " . date('Y-m-d') . ", Time: " . date('H:s:i');
         log_init('payment', $content);
+
+
+        // Get the database name
+        $stmt = $db->query("SELECT DATABASE()");
+        $dbName = $stmt->fetchColumn();
+
+        // Attempt to extract table name from error message
+        $errorMessage = $e->getMessage();
+        $tableName = null;
+
+        // Example of extracting the table name using a regular expression
+        if (preg_match('/(table|relation) "(\w+)"/i', $errorMessage, $matches)) {
+            $tableName = $matches[2];
+        }
+
+        $fileName = "set_payment.php";
+
+        // create message
+        $message = "Please check error log..!    ( File: " . $e->getFile() . " On line: " . $e->getLine() . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $tableName . " )  ( Database Name: "  . $dbName . " )";
+
+        // create discord alert
+        discord($message);
     }
 }
 

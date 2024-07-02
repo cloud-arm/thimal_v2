@@ -33,50 +33,50 @@ foreach ($sales as $list) {
     $app_id = $list['id'];
 
 
-    // get loading details
-    $result = $db->prepare("SELECT * FROM loading WHERE transaction_id=:id AND action='load' ");
-    $result->bindParam(':id', $load);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $lorry = $row['lorry_no'];
-        $lorry_id = $row['lorry_id'];
-        $root = $row['root'];
-        $driver = $row['driver'];
-        $term = $row['term'];
-    }
-
-    // get employee details
-    $result = $db->prepare("SELECT * FROM employee WHERE id=:id  ");
-    $result->bindParam(':id', $driver);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $driver_name = $row['name'];
-    }
-
-    $online_action = 0;
-    // get customer details
-    $result = $db->prepare("SELECT * FROM customer WHERE customer_id=:id  ");
-    $result->bindParam(':id', $cus);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $cus_name = $row['customer_name'];
-        $address = $row['address'];
-        $online_action = $row['online_action'];
-    }
-
-    // get sales details
-    $result = $db->prepare("SELECT sum(cost_amount),sum(profit),sum(vat),sum(value) FROM sales_list WHERE invoice_no=:id  ");
-    $result->bindParam(':id', $invoice);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $cost = $row['sum(cost_amount)'];
-        $profit = $row['sum(profit)'];
-        $vat = $row['sum(vat)'];
-        $value = $row['sum(value)'];
-    }
-
     //------------------------------------------------------------------//
     try {
+
+        // get loading details
+        $result = $db->prepare("SELECT * FROM loading WHERE transaction_id=:id AND action='load' ");
+        $result->bindParam(':id', $load);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $lorry = $row['lorry_no'];
+            $lorry_id = $row['lorry_id'];
+            $root = $row['root'];
+            $driver = $row['driver'];
+            $term = $row['term'];
+        }
+
+        // get employee details
+        $result = $db->prepare("SELECT * FROM employee WHERE id=:id  ");
+        $result->bindParam(':id', $driver);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $driver_name = $row['name'];
+        }
+
+        $online_action = 0;
+        // get customer details
+        $result = $db->prepare("SELECT * FROM customer WHERE customer_id=:id  ");
+        $result->bindParam(':id', $cus);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $cus_name = $row['customer_name'];
+            $address = $row['address'];
+            $online_action = $row['online_action'];
+        }
+
+        // get sales details
+        $result = $db->prepare("SELECT sum(cost_amount),sum(profit),sum(vat),sum(value) FROM sales_list WHERE invoice_no=:id  ");
+        $result->bindParam(':id', $invoice);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $cost = $row['sum(cost_amount)'];
+            $profit = $row['sum(profit)'];
+            $vat = $row['sum(vat)'];
+            $value = $row['sum(value)'];
+        }
 
         //checking duplicate
         $con = 0;
@@ -196,6 +196,28 @@ foreach ($sales as $list) {
         // Create log
         $content = "cloud_id: 0, app_id: " . $app_id . ", invoice: " . $invoice . ", status: failed, message: " . $e->getMessage() . ", Date: " . date('Y-m-d') . ", Time: " . date('H:s:i');
         log_init('sales', $content);
+
+
+        // Get the database name
+        $stmt = $db->query("SELECT DATABASE()");
+        $dbName = $stmt->fetchColumn();
+
+        // Attempt to extract table name from error message
+        $errorMessage = $e->getMessage();
+        $tableName = null;
+
+        // Example of extracting the table name using a regular expression
+        if (preg_match('/(table|relation) "(\w+)"/i', $errorMessage, $matches)) {
+            $tableName = $matches[2];
+        }
+
+        $fileName = "set_sales.php";
+
+        // create message
+        $message = "Please check error log..!    ( File: " . $e->getFile() . " On line: " . $e->getLine() . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $tableName . " )  ( Database Name: "  . $dbName . " )";
+
+        // create discord alert
+        discord($message);
     }
 }
 
