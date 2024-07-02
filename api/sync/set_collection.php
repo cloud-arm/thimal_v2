@@ -1,5 +1,6 @@
 <?php
 include('../../connect.php');
+include('../../config.php');
 include('log.php');
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -32,18 +33,19 @@ foreach ($collection as $list) {
 
     $time = date('H:i:s');
 
-    $cus = 0;//
-    $cus_name = '';//
+    $cus = 0; //
+    $cus_name = ''; //
 
-    // get customer details
-    $result = $db->prepare("SELECT * FROM customer WHERE customer_id=:id  ");
-    $result->bindParam(':id', $cus);
-    $result->execute();
-    for ($i = 0; $row = $result->fetch(); $i++) {
-        $cus_name = $row['customer_name'];
-    }
     //------------------------------------------------------------------//
     try {
+
+        // get customer details
+        $result = $db->prepare("SELECT * FROM customer WHERE customer_id=:id  ");
+        $result->bindParam(':id', $cus);
+        $result->execute();
+        for ($i = 0; $row = $result->fetch(); $i++) {
+            $cus_name = $row['customer_name'];
+        }
 
         //checking duplicate
         $con = 0;
@@ -150,6 +152,28 @@ foreach ($collection as $list) {
         // Create log
         $content = "cloud_id: 0, app_id: " . $app_id . ", invoice: " . $invoice . ", status: failed, message: " . $e->getMessage() . ", Date: " . date('Y-m-d') . ", Time: " . date('H:s:i');
         log_init('collection', $content);
+
+
+        // Get the database name
+        $stmt = $db->query("SELECT DATABASE()");
+        $dbName = $stmt->fetchColumn();
+
+        // Attempt to extract table name from error message
+        $errorMessage = $e->getMessage();
+        $tableName = null;
+
+        // Example of extracting the table name using a regular expression
+        if (preg_match('/(table|relation) "(\w+)"/i', $errorMessage, $matches)) {
+            $tableName = $matches[2];
+        }
+
+        $fileName = "set_collection.php";
+
+        // create message
+        $message = "Please check error log..!    ( File: " . $e->getFile() . " On line: " . $e->getLine() . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $tableName . " )  ( Database Name: "  . $dbName . " )";
+
+        // create discord alert
+        discord($message);
     }
 }
 
