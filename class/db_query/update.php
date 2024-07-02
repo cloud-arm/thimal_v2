@@ -21,6 +21,16 @@ function update($table, $data, $where, $path = "")
         return array("status" => "success", "message" => "Data updated successfully..!");
     } catch (PDOException $e) {
 
+        // Get the database name
+        $stmt = $db->query("SELECT DATABASE()");
+        $dbName = $stmt->fetchColumn();
+
+        // create message
+        $message = "Data update failed..!    ( File: " . $e->getFile() . " On line: " . $e->getLine() . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $table . " )  ( Database Name: "  . $dbName . " )";
+
+        // create discord alert
+        discord($message);
+
         // create error respond 
         return array("status" => "failed", "message" => $e->getMessage());
     }
