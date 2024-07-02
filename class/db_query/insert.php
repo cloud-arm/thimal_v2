@@ -35,7 +35,7 @@ function insert($table, $data, $path = "", $file = "")
         $dbName = $stmt->fetchColumn();
 
         // create message
-        $message = "Please check error log..!    ( File: " . $file . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $table . " )  ( Database Name: "  . $dbName . " )";
+        $message = "Please check error log..!    ( File: " . $e->getFile() . " On line: " . $e->getLine() . " )  ( Message: " . $e->getMessage() . " )  ( Table Name: "  . $table . " )  ( Database Name: "  . $dbName . " )";
 
         // create discord alert
         discord($message);
