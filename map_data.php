@@ -3,7 +3,7 @@ include('connect.php');
 
 // Fetch GPS data from the 'gps_data' table
 $gpsDataFromTable = array(
-    array('lat' => 6.043414, 'lng' => 80.245659, 'name' => 'Narangoda', 'icon' => '', 'date' => '', 'time' => '')
+    array('lat' => 6.826268, 'lng' => 79.912433, 'name' => 'Thimal', 'icon' => '', 'date' => '', 'time' => '')
 );
 
 // Fetch GPS data from the 'user' table
