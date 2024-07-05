@@ -69,7 +69,7 @@ include("connect.php");
   <!-- Page script -->
   <script>
     // Initialize Leaflet map with Sri Lanka coordinates and an appropriate zoom level
-    var map = L.map('map').setView([6.826205, 79.912463], 11); // Centered on Sri Lanka, zoom level 7
+    var map = L.map('map').setView([6.892559, 79.932053], 12); // Centered on Sri Lanka, zoom level 7
 
     // Define bounds for cropping the map (example bounds)
     var southWest = L.latLng(7.157403, 79.569577); // Bottom-left corner of Sri Lanka
@@ -122,7 +122,7 @@ include("connect.php");
       var marker2 = L.marker([6.0535, 80.2210], {
         icon: customIcon
       }).addTo(map);
-      marker2.bindPopup('Narangoda'); // Bind popup instead of label
+      marker2.bindPopup('Thimal'); // Bind popup instead of label
       var Ico = '';
       fetch('map_data.php')
         .then(response => response.json())
