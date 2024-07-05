@@ -72,8 +72,8 @@ include("connect.php");
     var map = L.map('map').setView([6.228372, 80.412602], 11); // Centered on Sri Lanka, zoom level 7
 
     // Define bounds for cropping the map (example bounds)
-    var southWest = L.latLng(5.723733, 79.538727); // Bottom-left corner of Sri Lanka
-    var northEast = L.latLng(9.8354, 81.8862); // Top-right corner of Sri Lanka
+    var southWest = L.latLng(7.157403, 79.569577); // Bottom-left corner of Sri Lanka
+    var northEast = L.latLng(6.572458, 80.404066); // Top-right corner of Sri Lanka
     var bounds = L.latLngBounds(southWest, northEast);
 
     // Add OpenStreetMap tile layer
