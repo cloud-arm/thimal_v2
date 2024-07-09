@@ -34,20 +34,32 @@ include("connect.php");
             <h3 class="box-title">Filter</h3>
           </div>
           <?php
+
+          $con1 = 'none';
+          $con2 = 'none';
+          $con3 = 'none';
+          $filter = 'all';
+          $group = 0;
+          $customer_type = 0;
+          $customer_id = 0;
+
           if (isset($_GET['type'])) {
 
             $filter = $_GET['filter']; // customer filter
 
             if ($filter == 'group') {
               $group = $_GET['group']; //customer category id
+              $con1 = 'block';
             }
 
             if ($filter == 'type') {
               $customer_type = $_GET['customer_type']; //customer type 1/2/3
+              $con2 = 'block';
             }
 
             if ($filter == 'cus') {
               $customer_id = $_GET['cus']; // customer id
+              $con3 = 'block';
             }
 
             $type = $_GET['type']; // credit type
@@ -71,8 +83,8 @@ include("connect.php");
                   <div class="form-group">
                     <label>Type</label>
                     <select class="form-control select2 hidden-search" name="type">
-                      <option value="all">Total Debtors</option>
-                      <option value="due">Overdue Debtors</option>
+                      <option <?php if ($type == 'all') { ?> selected <?php } ?> value="all">Total Debtors</option>
+                      <option <?php if ($type == 'due') { ?> selected <?php } ?> value="due">Overdue Debtors</option>
                     </select>
                   </div>
                 </div>
@@ -81,10 +93,10 @@ include("connect.php");
                   <div class="form-group">
                     <label>Customer</label>
                     <select class="form-control select2 hidden-search" name="filter" class="form-control" onchange="view_payment_date(this.value);">
-                      <option value="all">All Customer</option>
-                      <option value="group">Customer Group</option>
-                      <option value="type">Customer Type</option>
-                      <option value="cus">One Customer</option>
+                      <option <?php if ($filter == 'all') { ?> selected <?php } ?> value="all">All Customer</option>
+                      <option <?php if ($filter == 'group') { ?> selected <?php } ?> value="group">Customer Group</option>
+                      <option <?php if ($filter == 'type') { ?> selected <?php } ?> value="type">Customer Type</option>
+                      <option <?php if ($filter == 'cus') { ?> selected <?php } ?> value="cus">One Customer</option>
                     </select>
                   </div>
                 </div>
@@ -93,7 +105,7 @@ include("connect.php");
                   <div class="form-group">
                     <label>Lorry </label>
                     <select class="form-control select2" name="lorry" style="width: 100%;">
-                      <option value="all"> All Lorry </option>
+                      <option <?php if ($lorry == 'all') { ?> selected <?php } ?> value="all"> All Lorry </option>
 
                       <?php
                       $result = $db->prepare("SELECT * FROM lorry ORDER by lorry_id ASC ");
@@ -101,7 +113,7 @@ include("connect.php");
                       $result->execute();
                       for ($i = 0; $row = $result->fetch(); $i++) {
                       ?>
-                        <option><?php echo $row['lorry_no']; ?> </option>
+                        <option <?php if ($lorry == $row['lorry_no']) { ?> selected <?php } ?> value="<?php echo $row['lorry_no']; ?>"><?php echo $row['lorry_no']; ?> </option>
                       <?php
                       }
                       ?>
@@ -109,7 +121,7 @@ include("connect.php");
                   </div>
                 </div>
 
-                <div class="col-md-3" id="group_view" style="display:none;">
+                <div class="col-md-3" id="group_view" style="display:<?php echo $con1; ?>;">
                   <div class="form-group">
                     <label>Customer Group </label>
                     <select class="form-control select2" name="group" style="width: 100%;">
@@ -120,7 +132,7 @@ include("connect.php");
                       $result->execute();
                       for ($i = 0; $row = $result->fetch(); $i++) {
                       ?>
-                        <option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?> </option>
+                        <option <?php if ($group == $row['id']) { ?> selected <?php } ?> value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?> </option>
                       <?php
                       }
                       ?>
@@ -128,18 +140,18 @@ include("connect.php");
                   </div>
                 </div>
 
-                <div class="col-md-3" id="type_view" style="display:none;">
+                <div class="col-md-3" id="type_view" style="display:<?php echo $con2; ?>;">
                   <div class="form-group">
                     <label>Customer Type</label>
                     <select class="form-control select2 hidden-search" name="customer_type" style="width: 100%;">
-                      <option value="1">Channel</option>
-                      <option value="2">Commercial</option>
-                      <option value="3">Apartment</option>
+                      <option <?php if ($customer_type == "1") { ?> selected <?php } ?> value="1">Channel</option>
+                      <option <?php if ($customer_type == "2") { ?> selected <?php } ?> value="2">Commercial</option>
+                      <option <?php if ($customer_type == "3") { ?> selected <?php } ?> value="3">Apartment</option>
                     </select>
                   </div>
                 </div>
 
-                <div class="col-md-6" id="cus_view" style="display:none;">
+                <div class="col-md-6" id="cus_view" style="display:<?php echo $con3; ?>;">
                   <div class="form-group">
                     <label>Customer</label>
                     <select class="form-control select2" name="cus" style="width: 100%;">
@@ -149,7 +161,7 @@ include("connect.php");
                       $result->execute();
                       for ($i = 0; $row = $result->fetch(); $i++) {
                       ?>
-                        <option value="<?php echo $row['customer_id']; ?>"><?php echo $row['customer_name']; ?> </option>
+                        <option <?php if ($customer_id == $row['customer_id']) { ?> selected <?php } ?> value="<?php echo $row['customer_id']; ?>"><?php echo $row['customer_name']; ?> </option>
                       <?php
                       }
                       ?>
@@ -210,8 +222,11 @@ include("connect.php");
 
                   $customer_fill = " WHERE customer.category = '$group' ";
                 } else if ($filter == "type") {
-
-                  $customer_fill = " WHERE customer.type = '$customer_type' ";
+                  if ($customer_type == 1) {
+                    $customer_fill = " WHERE customer.type = '$customer_type' AND (customer.category != '8' AND customer.category != '16') ";
+                  } else {
+                    $customer_fill = " WHERE customer.type = '$customer_type' ";
+                  }
                 } else {
 
                   $customer_fill = " WHERE customer.customer_id = '$customer_id' ";
@@ -227,7 +242,7 @@ include("connect.php");
                 $payment = array();
                 $sales = array();
 
-                $sql1 = "SELECT customer_id FROM customer $customer_fill ORDER BY category DESC";
+                $sql1 = "SELECT customer_id,credit_period FROM customer $customer_fill ORDER BY category DESC";
                 // $sql1 = "SELECT payment.customer_id AS cus_id FROM payment JOIN customer ON customer.customer_id = payment.customer_id WHERE payment.action='2' AND payment.type='credit' AND payment.credit_balance > 0 $customer_fill ORDER BY customer.customer_id";
                 // $sql2 = "SELECT *,sales.date AS sales_date FROM payment JOIN sales ON payment.sales_id = sales.transaction_id WHERE payment.action='2' AND sales.action='1' AND payment.type='credit' AND payment.credit_balance > 0  ORDER BY payment.customer_id" . $lorry_fill;
 
