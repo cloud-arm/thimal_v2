@@ -18,10 +18,10 @@ date_default_timezone_set("Asia/Colombo");
 
         ?>
         <style>
-            th {
-                text-align: center;
-                padding: 8px !important;
-            }
+        th {
+            text-align: center;
+            padding: 8px !important;
+        }
         </style>
 
         <!-- Content Wrapper. Contains page content -->
@@ -45,7 +45,6 @@ date_default_timezone_set("Asia/Colombo");
                             </div>
 
                             <?php
-                            include("connect.php");
                             date_default_timezone_set("Asia/Colombo");
 
                             if (isset($_GET['d1'])) {
@@ -187,7 +186,8 @@ date_default_timezone_set("Asia/Colombo");
                                                     <div class="input-group-addon">
                                                         <label>From :</label>
                                                     </div>
-                                                    <input type="text" class="form-control" name="d1" id="datepicker1" value="<?php echo $date1; ?>" autocomplete="off" />
+                                                    <input type="text" class="form-control" name="d1" id="datepicker1"
+                                                        value="<?php echo $date1; ?>" autocomplete="off" />
                                                 </div>
                                             </div>
                                         </div>
@@ -198,7 +198,8 @@ date_default_timezone_set("Asia/Colombo");
                                                     <div class="input-group-addon">
                                                         <label>To:</label>
                                                     </div>
-                                                    <input type="text" class="form-control" name="d2" id="datepicker2" value="<?php echo $date2; ?>" autocomplete="off" />
+                                                    <input type="text" class="form-control" name="d2" id="datepicker2"
+                                                        value="<?php echo $date2; ?>" autocomplete="off" />
                                                 </div>
                                             </div>
                                         </div>
@@ -209,7 +210,9 @@ date_default_timezone_set("Asia/Colombo");
                                                     <div class="input-group-addon">
                                                         <label>Product</label>
                                                     </div>
-                                                    <select class="form-control select2" name="products[]" multiple="multiple" data-placeholder="Select products" style="width: 100%;">
+                                                    <select class="form-control select2" name="products[]"
+                                                        multiple="multiple" data-placeholder="Select products"
+                                                        style="width: 100%;">
                                                         <?php
                                                         $result = $db->prepare("SELECT product_id,gen_name FROM products WHERE product_id < 5 ");
                                                         $result->bindParam(':id', $res);
@@ -217,9 +220,9 @@ date_default_timezone_set("Asia/Colombo");
                                                         for ($i = 0; $row = $result->fetch(); $i++) {
 
                                                         ?>
-                                                            <option value="<?php echo $row['product_id']; ?>">
-                                                                <?php echo $row['gen_name']; ?>
-                                                            </option>
+                                                        <option value="<?php echo $row['product_id']; ?>">
+                                                            <?php echo $row['gen_name']; ?>
+                                                        </option>
                                                         <?php  } ?>
                                                     </select>
                                                 </div>
@@ -274,9 +277,10 @@ date_default_timezone_set("Asia/Colombo");
                                     }
                                     ?>
 
-                                    <?php
+                                    <?php $total_pro=[];
                                     foreach ($products as $pid) {
                                         echo sprintf('<th>%s</th>', get_name($short_name, $pid));
+                                        $total_pro[$pid]=0;
                                     }
                                     ?>
 
@@ -312,45 +316,65 @@ date_default_timezone_set("Asia/Colombo");
                                         foreach ($products as $pid) {
                                             $avg_total[$pid] = 0;
                                         } ?>
-                                        <tr>
-                                            <td><?php echo $row['customer_id']; ?></td>
-                                            <td><?php echo $row['root_name']; ?></td>
-                                            <td><?php echo $row['customer_name']; ?></td>
+                                <tr>
+                                    <td><?php echo $row['customer_id']; ?></td>
+                                    <td><?php echo $row['root_name']; ?></td>
+                                    <td><?php echo $row['customer_name']; ?></td>
 
-                                            <?php foreach ($monthNumber as $month) {
+                                    <?php foreach ($monthNumber as $month) {
                                                 foreach ($products as $pid) { ?>
-                                                    <td align="center">
-                                                        <?php
+                                    <td align="center">
+                                        <?php
                                                         echo $qty = get_qty($data, $month, $pid, $row['customer_id']);
                                                         $avg_total[$pid] += $qty;
+                                                        $total_pro[$pid] += $qty;
                                                         ?>
-                                                    </td>
-                                            <?php }
+                                    </td>
+                                    <?php }
                                             } ?>
 
-                                            <?php foreach ($products as $pid) { ?>
-                                                <td align="right"><?php echo str_replace(",", "", number_format($avg_total[$pid] / count($monthNumber), 2)); ?></td>
-                                            <?php } ?>
-                                        </tr>
+                                    <?php foreach ($products as $pid) { ?>
+                                    <td align="right">
+                                        <?php echo str_replace(",", "", number_format($avg_total[$pid] / count($monthNumber), 2)); ?>
+                                    </td>
                                     <?php } ?>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                </tr>
+                                <?php } ?>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
 
-                                        <?php foreach ($monthNumber as $month) {
+                                    <?php foreach ($monthNumber as $month) {
                                             foreach ($products as $pid) { ?>
-                                                <td align="center"></td>
-                                        <?php }
+                                    <td align="center"></td>
+                                    <?php }
                                         } ?>
 
-                                        <?php foreach ($products as $pid) { ?>
-                                            <td align="center"></td>
-                                        <?php }  ?>
-                                    </tr>
+                                    <?php foreach ($products as $pid) { ?>
+                                    <td align="center"></td>
+                                    <?php }  ?>
+                                </tr>
                                 <?php } ?>
 
                             </tbody>
+                            <tfoot>
+                            <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+
+                                    <?php foreach ($monthNumber as $month) {
+                                            foreach ($products as $pid) { ?>
+                                    <td align="center"><?php echo $total_pro[$pid]; ?></td>
+                                    <?php }
+                                        } ?>
+
+                                    <?php foreach ($products as $pid) { ?>
+                                    <td align="center"></td>
+                                    <?php }  ?> 
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
 
@@ -403,74 +427,76 @@ date_default_timezone_set("Asia/Colombo");
     <script src="https://dev.colorbiz.org/ashen/cdn/main/dist/js/DarkTheme.js"></script>
 
     <script type="text/javascript">
-        $(function() {
-            $("#example").DataTable({
-                "searching": true,
-                "paging": true,
-                "responsive": true,
-                "lengthChange": true,
-                "ordering": false,
-                "info": true,
-                "autoWidth": true,
-                "buttons": ["excel", "pdf", "print"]
-            }).buttons().container().appendTo('#tbl_btn');
-        });
+    $(function() {
+        $("#example").DataTable({
+            "searching": true,
+            "paging": true,
+            "responsive": true,
+            "lengthChange": true,
+            "ordering": false,
+            "info": true,
+            "autoWidth": true,
+            "buttons": ["excel", "pdf", "print"]
+        }).buttons().container().appendTo('#tbl_btn');
+    });
     </script>
 
 
     <!-- Page script -->
     <script>
-        $(function() {
-            //Initialize Select2 Elements
-            $(".select2").select2();
+    $(function() {
+        //Initialize Select2 Elements
+        $(".select2").select2();
 
-            //Date range picker
-            $('#reservation').daterangepicker();
-            //Date range picker with time picker
-            //$('#datepicker').datepicker({datepicker: true,  format: 'yyyy/mm/dd '});
-            //Date range as a button
-            $('#daterange-btn').daterangepicker({
-                    ranges: {
-                        'Today': [moment(), moment()],
-                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                        'This Month': [moment().startOf('month'), moment().endOf('month')],
-                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-                    },
-                    startDate: moment().subtract(29, 'days'),
-                    endDate: moment()
+        //Date range picker
+        $('#reservation').daterangepicker();
+        //Date range picker with time picker
+        //$('#datepicker').datepicker({datepicker: true,  format: 'yyyy/mm/dd '});
+        //Date range as a button
+        $('#daterange-btn').daterangepicker({
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
+                        'month').endOf('month')]
                 },
-                function(start, end) {
-                    $('#daterange-btn span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-                }
-            );
+                startDate: moment().subtract(29, 'days'),
+                endDate: moment()
+            },
+            function(start, end) {
+                $('#daterange-btn span').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
+                    'MMMM D, YYYY'));
+            }
+        );
 
-            //Date picker
-            $('#datepicker1').datepicker({
-                autoclose: true,
-                datepicker: true,
-                format: 'yyyy-mm-dd'
-            });
-
-            $('#datepicker2').datepicker({
-                autoclose: true,
-                datepicker: true,
-                format: 'yyyy-mm-dd'
-            });
-
-
-
-            $('#datepickerd').datepicker({
-                autoclose: true,
-                datepicker: true,
-                format: 'yyyy/mm/dd '
-            });
-            $('#datepickerd').datepicker({
-                autoclose: true
-            });
-
+        //Date picker
+        $('#datepicker1').datepicker({
+            autoclose: true,
+            datepicker: true,
+            format: 'yyyy-mm-dd'
         });
+
+        $('#datepicker2').datepicker({
+            autoclose: true,
+            datepicker: true,
+            format: 'yyyy-mm-dd'
+        });
+
+
+
+        $('#datepickerd').datepicker({
+            autoclose: true,
+            datepicker: true,
+            format: 'yyyy/mm/dd '
+        });
+        $('#datepickerd').datepicker({
+            autoclose: true
+        });
+
+    });
     </script>
 
 </body>
