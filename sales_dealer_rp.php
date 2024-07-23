@@ -99,12 +99,12 @@ date_default_timezone_set("Asia/Colombo");
                                     $d1 = $month . '-01';
                                     $d2 = $month . '-31';
 
-                                    $sql = "SELECT * FROM sales_list WHERE action = 0 AND (date BETWEEN '$d1' AND '$d2') ";
+                                    $sql = "SELECT *,qty as qty_sum FROM sales_list WHERE action = 0 AND (date BETWEEN '$d1' AND '$d2') ";
                                     $result = $db->prepare($sql);
                                     $result->bindParam(':userid', $date);
                                     $result->execute();
                                     for ($i = 0; $row = $result->fetch(); $i++) {
-                                        $sales[] = ["customer_id" => $row["cus_id"], "date" => $row["date"], "product_id" => $row["product_id"], "product_name" => $row["name"], "qty" => $row["qty"]];
+                                        $sales[] = ["customer_id" => $row["cus_id"], "date" => $row["date"], "product_id" => $row["product_id"], "product_name" => $row["name"], "qty" => $row["qty_sum"]];
                                     }
 
                                     $result1 = $db->prepare("DELETE FROM customer_month_sales WHERE  month= :id ");
@@ -306,7 +306,7 @@ date_default_timezone_set("Asia/Colombo");
                                 $result1->execute();
                                 for ($k = 0; $row1 = $result1->fetch(); $k++) {
 
-                                    $result = $db->prepare("SELECT * FROM customer_month_sales WHERE root_name = :id AND (month BETWEEN '$m1' AND '$m2') GROUP BY customer_id ");
+                                    $result = $db->prepare("SELECT * FROM customer_month_sales WHERE (month BETWEEN '$m1' AND '$m2') GROUP BY customer_id ");
                                     $result->bindParam(':id', $row1['root_name']);
                                     $result->execute();
                                     for ($i = 0; $row = $result->fetch(); $i++) {
