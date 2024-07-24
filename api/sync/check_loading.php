@@ -27,7 +27,7 @@ try {
         $result_array = array (
             "action" => $row['action'],
             "sync" => $row['sync'],
-            "loading_id" => $row['transaction_id'],
+            "loading_id" => $row['loading_id'],
         );
         }
 
