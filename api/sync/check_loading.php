@@ -23,10 +23,13 @@ try {
     $result->execute();
 
     // Fetch the results and create an array
-    $result_array = array();
-    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        $result_array[] = $row;
-    }
+    for($i=0; $row = $result->fetch(); $i++){
+        $result_array = array (
+            "action" => $row['action'],
+            "sync" => $row['sync'],
+            "loading_id" => $row['transaction_id'],
+        );
+        }
 
     // Encode the array into JSON and output it
     echo json_encode($result_array);
