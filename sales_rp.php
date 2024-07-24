@@ -732,7 +732,7 @@ date_default_timezone_set("Asia/Colombo");
 
                     <tr>
 
-                      <td> <?php echo $list['invo']; ?> </td>
+                      <td> <?php echo $list['id']; ?> </td>
                       <td>
                         <span class="badge bg-gray"> <i class="fa fa-calendar"></i>
                           <?php echo $list['date']; ?></span>
