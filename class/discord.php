@@ -23,7 +23,7 @@ function discord($message, $header = "", $table = '')
             "username" => $header,
         ];
 
-        $url = "https://discord.com/api/webhooks/1252501185919975435/rgAXPixQFrw9t8yais0f5oEHpuhBRjQ_IPUAeQe5VWzSiCvyUM-LuPDdHZQAShcMKLte";
+        $url = "https://discord.com/api/webhooks/1266975058958745613/BzUFTORGvduvbvofJDORhG3mORQ5hlDeXiTrgvJeovFBZWQ6n23FtsAYE0gsFiFQQglG";
 
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
