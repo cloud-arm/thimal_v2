@@ -120,8 +120,7 @@ include("connect.php");
                       <label>Area</label>
                       <select class="form-control select2 hidden-search" name="area" style="width: 100%;" autofocus>
 
-                        <option value="Galle"> Galle </option>
-                        <option value="Matara"> Matara </option>
+                        <option value="colombo"> Colombo </option>
 
                       </select>
                     </div>
@@ -163,8 +162,7 @@ include("connect.php");
                       <label>Area</label>
                       <select class="form-control select2 hidden-search" id="popup_area" name="area" style="width: 100%;" autofocus>
 
-                        <option value="Galle"> Galle </option>
-                        <option value="Matara"> Matara </option>
+                      <option value="colombo"> Colombo </option>
 
                       </select>
                     </div>
