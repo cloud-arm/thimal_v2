@@ -14,7 +14,7 @@ $result->execute();
 $gpsDataFromUserTable = $result->fetchAll();
 
 // Merge both sets of GPS data
-$mergedGPSData = array_merge($gpsDataFromTable, $gpsDataFromUserTable);
+$mergedGPSData = array_merge($gpsDataFromUserTable,$gpsDataFromTable);
 
 // Output merged GPS data as JSON
 header('Content-Type: application/json');
