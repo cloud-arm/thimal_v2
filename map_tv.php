@@ -136,7 +136,7 @@ include("connect.php");
           });
 
           data.forEach(entry => {
-            if (entry.name == 'Narangoda') {
+            if (entry.name == 'Thimal') {
               Ico = yIcon
             } else {
               Ico = customIcon

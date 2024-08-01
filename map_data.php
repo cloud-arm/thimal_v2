@@ -1,5 +1,6 @@
 <?php
 include('connect.php');
+date_default_timezone_set("Asia/Colombo");
 
 // Fetch GPS data from the 'gps_data' table
 $gpsDataFromTable = array(
@@ -7,7 +8,8 @@ $gpsDataFromTable = array(
 );
 
 // Fetch GPS data from the 'user' table
-$result = $db->prepare("SELECT * FROM user");
+$date=date('Y-m-d');
+$result = $db->prepare("SELECT * FROM user WHERE date='$date'");
 $result->execute();
 $gpsDataFromUserTable = $result->fetchAll();
 
