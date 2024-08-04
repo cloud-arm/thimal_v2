@@ -10,6 +10,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 $date = date("Y-m-d");
 $time = date('H:i:s');
 
+$load_id = isset($_POST['loading_id']) ? $_POST['loading_id'] : null;
 $id = isset($_POST['user_id']) ? $_POST['user_id'] : null;
 $lat = isset($_POST['lat']) ? $_POST['lat'] : null;
 $lng = isset($_POST['lng']) ? $_POST['lng'] : null;
@@ -30,13 +31,8 @@ if (!$id || !$lat || !$lng) {
 $result_array = array();
 
 $load_id = 0;
-$result = $db->prepare("SELECT * FROM loading WHERE  driver ='$id' AND action='load' ");
-$result->bindParam(':id', $res);
-$result->execute();
-for ($i = 0; $row = $result->fetch(); $i++) {
-    $load_id = $row['transaction_id'];
-}
 
+$action=select_item('loading','transaction_id','transaction_id='.$load_id);
 
 
 //------------------------------------------------------------------//
@@ -54,7 +50,7 @@ try {
     $result_array[] = array(
         "status" => $status['status'],
         "message" => $status['message'],
-        "action" => $load_id,
+        "action" => $action,
     );
 } catch (PDOException $e) {
 
@@ -62,7 +58,7 @@ try {
     $result_array[] = array(
         "status" => "failed",
         "message" => $e->getMessage(),
-        "action" => $load_id,
+        "action" => $action,
     );
 }
 
