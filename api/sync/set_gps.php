@@ -30,9 +30,9 @@ if (!$id || !$lat || !$lng) {
 // respond init
 $result_array = array();
 
-$load_id = 0;
 
-$action=select_item('loading','transaction_id','transaction_id='.$load_id,'../../');
+
+$action=select_item('loading','action','transaction_id='.$load_id,'../../');
 
 
 //------------------------------------------------------------------//
