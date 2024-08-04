@@ -47,7 +47,7 @@ try {
 
     $status =  update("user", $updateData, "EmployeeId = " . $id, "../../");
 
-    $result_array[] = array(
+    $result_array = array(
         "status" => $status['status'],
         "message" => $status['message'],
         "action" => $action,
@@ -55,7 +55,7 @@ try {
 } catch (PDOException $e) {
 
     // create error respond 
-    $result_array[] = array(
+    $result_array = array(
         "status" => "failed",
         "message" => $e->getMessage(),
         "action" => $action,
