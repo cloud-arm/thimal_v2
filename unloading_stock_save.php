@@ -170,6 +170,16 @@ if (!$error) {
     $ql->execute(array('loading_collection', 'Credit', $driver, $lo_id, $amount, 0, $cr_id, 'loading_cash', $cr_name, $cr_blc, 'collection', 'Loading', 0, 0, $date, $time, $user_id, $user_name));
     //------------------------
 
+    
+
+$sql = "UPDATE loading SET action='unload' WHERE transaction_id ='$lo_id'";
+$q = $db->prepare($sql);
+$q->execute(array($qty,$c));
+
+$sql = "UPDATE lorry SET action='unload' WHERE loading_id ='$lo_id'";
+$q = $db->prepare($sql);
+$q->execute(array($qty,$c));
+
 
 
 
