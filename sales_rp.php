@@ -593,7 +593,7 @@ date_default_timezone_set("Asia/Colombo");
               <thead>
 
                 <tr>
-                  <th colspan="3">Sales Report </th>
+                  <th colspan="4">Sales Report </th>
 
                   <?php if ($product == 'all' | $product != 3) { ?>
 
@@ -621,6 +621,7 @@ date_default_timezone_set("Asia/Colombo");
                 </tr>
 
                 <tr>
+                <th>ID</th>
                   <th>Invoice</th>
                   <th>Date</th>
                   <th>Customer</th>
@@ -733,6 +734,7 @@ date_default_timezone_set("Asia/Colombo");
                     <tr>
 
                       <td> <?php echo $list['id']; ?> </td>
+                      <td> <?php echo $list['invo']; ?> </td>
                       <td>
                         <span class="badge bg-gray"> <i class="fa fa-calendar"></i>
                           <?php echo $list['date']; ?></span>
@@ -800,7 +802,7 @@ date_default_timezone_set("Asia/Colombo");
 
               <tfoot style="background-color: rgb(var(--bg-light-70));">
                 <tr>
-                  <th colspan="3" style="text-align: right;">Total</th>
+                  <th colspan="4" style="text-align: right;">Total</th>
 
                   <?php if ($product == 'all' | $product != 3) { ?>
 
