@@ -204,6 +204,7 @@ include("connect.php");
                   <th>Date</th>
                   <th>Limit</th>
                   <th>Amount</th>
+                  <th>Pay</th>
                   <th>Overdue</th>
                   <th>Memo</th>
                   <th>#</th>
@@ -323,7 +324,8 @@ include("connect.php");
                           <td><?php echo $row['credit_period'];  ?> Day</td>
                           <td><?php echo number_format($row['amount'] - $row['pay_amount'], 2);
                               $b_tot += $row['amount'] - $row['pay_amount'];
-                              if ($row['pay_amount'] > '0') { ?> / <span class="pull-right badge bg-black"><?php echo $row['pay_amount']; ?></span><?php } ?></td>
+                              ?></td>
+                          <td><?php echo $row['pay_amount']; ?></span></td>
                           <td><?php echo $rs1;  ?> Day</td>
                           <td><?php echo $row['memo']; ?></td>
                           <td>
@@ -345,6 +347,7 @@ include("connect.php");
                       <td></td>
                       <td></td>
                       <td><span class="pull-right badge bg-red"><?php echo number_format($b_tot, 1); ?></span></td>
+                      <td></td>
                       <td></td>
                       <td></td>
                       <td>
